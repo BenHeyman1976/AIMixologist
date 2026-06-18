@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-display: "Playfair Display", Georgia, serif;
+}
+
+html,
+body {
+  background-color: theme("colors.cocktail.cream");
+  color: theme("colors.cocktail.ink");
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Reusable component classes */
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 font-semibold transition active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-primary {
+    @apply btn text-white shadow-card;
+    background-image: theme("backgroundImage.warm-gradient");
+  }
+  .btn-secondary {
+    @apply btn bg-white text-cocktail-plum border border-cocktail-peach/50 hover:bg-cocktail-cream;
+  }
+  .btn-ghost {
+    @apply btn bg-transparent text-cocktail-plum hover:bg-white/60;
+  }
+  .card {
+    @apply rounded-3xl bg-white shadow-card overflow-hidden;
+  }
+  .chip {
+    @apply inline-flex items-center rounded-full bg-cocktail-peach/20 text-cocktail-plum px-3 py-1 text-xs font-semibold;
+  }
+  .input {
+    @apply w-full rounded-2xl border border-cocktail-peach/40 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-cocktail-coral/50;
+  }
+}

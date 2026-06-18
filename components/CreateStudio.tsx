@@ -1,0 +1,255 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import RecipeDetails from "@/components/RecipeDetails";
+import ShareButtons from "@/components/ShareButtons";
+import type { Cocktail, GeneratedRecipe, ImageUsage } from "@/lib/types";
+
+// The creation studio: prompt → recipe → image → save → publish → share.
+export default function CreateStudio({
+  initialPrompt = "",
+}: {
+  initialPrompt?: string;
+}) {
+  const [prompt, setPrompt] = useState(initialPrompt);
+  const [recipe, setRecipe] = useState<GeneratedRecipe | null>(null);
+  const [compliance, setCompliance] = useState<string[]>([]);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [saved, setSaved] = useState<Cocktail | null>(null);
+  const [usage, setUsage] = useState<ImageUsage | null>(null);
+
+  const [genLoading, setGenLoading] = useState(false);
+  const [imgLoading, setImgLoading] = useState(false);
+  const [saveLoading, setSaveLoading] = useState(false);
+  const [pubLoading, setPubLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function generateRecipe() {
+    if (prompt.trim().length < 3) return;
+    setGenLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/generate-recipe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setRecipe(data.recipe);
+      setCompliance(data.compliance ?? []);
+      // A re-generation invalidates a previously saved/imaged cocktail.
+      setSaved(null);
+      setImageUrl(null);
+    } catch (err: any) {
+      setError(err.message ?? "Failed to generate recipe.");
+    } finally {
+      setGenLoading(false);
+    }
+  }
+
+  async function generateImage() {
+    if (!recipe) return;
+    setImgLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/generate-image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: recipe.name,
+          prompt,
+          cocktailId: saved?.id,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        if (data.usage) setUsage(data.usage);
+        throw new Error(data.error);
+      }
+      setImageUrl(data.image_url);
+      setUsage(data.usage);
+    } catch (err: any) {
+      setError(err.message ?? "Failed to generate image.");
+    } finally {
+      setImgLoading(false);
+    }
+  }
+
+  async function save() {
+    if (!recipe) return;
+    setSaveLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/cocktails", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt, recipe, imageUrl }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setSaved(data.cocktail);
+    } catch (err: any) {
+      setError(err.message ?? "Failed to save cocktail.");
+    } finally {
+      setSaveLoading(false);
+    }
+  }
+
+  async function publish() {
+    let cocktail = saved;
+    setPubLoading(true);
+    setError(null);
+    try {
+      // Save first if not yet saved.
+      if (!cocktail) {
+        const res = await fetch("/api/cocktails", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt, recipe, imageUrl, isPublic: true }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+        cocktail = data.cocktail;
+      } else {
+        const res = await fetch(`/api/cocktails/${cocktail.id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ isPublic: true, imageUrl }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+        cocktail = data.cocktail;
+      }
+      setSaved(cocktail);
+    } catch (err: any) {
+      setError(err.message ?? "Failed to publish cocktail.");
+    } finally {
+      setPubLoading(false);
+    }
+  }
+
+  const shareUrl =
+    saved && typeof window !== "undefined"
+      ? `${window.location.origin}/cocktail/${saved.id}`
+      : "";
+
+  return (
+    <div className="mx-auto max-w-3xl px-4 py-10 space-y-8">
+      <div>
+        <h1 className="font-display text-3xl font-bold text-cocktail-plum">
+          Create a cocktail
+        </h1>
+        <p className="mt-1 text-cocktail-ink/70">
+          Describe your idea. Iterate as many times as you like — recipes are
+          unlimited and free.
+        </p>
+      </div>
+
+      {/* Prompt */}
+      <div className="card p-5 space-y-3">
+        <textarea
+          className="input min-h-[110px] text-lg"
+          placeholder="e.g. Create a relaxing Aperol and Trip CBD spritz for summer"
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+        />
+        <div className="flex items-center gap-3">
+          <button
+            onClick={generateRecipe}
+            disabled={genLoading || prompt.trim().length < 3}
+            className="btn-primary"
+          >
+            {genLoading ? "Mixing…" : recipe ? "Regenerate 🔄" : "Generate recipe 🍹"}
+          </button>
+          {recipe && (
+            <span className="text-sm text-cocktail-ink/60">
+              Not quite right? Tweak the prompt and regenerate.
+            </span>
+          )}
+        </div>
+      </div>
+
+      {error && (
+        <div className="rounded-2xl bg-cocktail-coral/10 border border-cocktail-coral/40 p-4 text-cocktail-coral">
+          {error}
+        </div>
+      )}
+
+      {/* Result */}
+      {recipe && (
+        <div className="card overflow-hidden">
+          {/* Hero image */}
+          <div className="relative aspect-video bg-warm-gradient">
+            {imageUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={imageUrl}
+                alt={recipe.name}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <div className="flex h-full flex-col items-center justify-center text-white">
+                <span className="text-6xl">🍸</span>
+                <span className="mt-2 text-sm text-white/80">
+                  Generate an image to bring it to life
+                </span>
+              </div>
+            )}
+          </div>
+
+          <div className="p-6 space-y-6">
+            <h2 className="font-display text-2xl font-bold text-cocktail-plum">
+              {recipe.name}
+            </h2>
+
+            <RecipeDetails recipe={recipe} compliance={compliance} />
+
+            {/* Image usage meter */}
+            {usage && (
+              <p className="text-sm text-cocktail-ink/60">
+                Image generations this month: {usage.used}/{usage.limit}{" "}
+                ({usage.remaining} left)
+              </p>
+            )}
+
+            {/* Actions */}
+            <div className="flex flex-wrap gap-3 border-t border-cocktail-peach/30 pt-5">
+              <button onClick={save} disabled={saveLoading} className="btn-secondary">
+                {saveLoading ? "Saving…" : saved ? "Saved ✓" : "Save"}
+              </button>
+              <button onClick={generateImage} disabled={imgLoading} className="btn-secondary">
+                {imgLoading ? "Generating image…" : "Generate image 🖼️"}
+              </button>
+              <button onClick={publish} disabled={pubLoading} className="btn-primary">
+                {pubLoading
+                  ? "Publishing…"
+                  : saved?.is_public
+                  ? "Published ✓"
+                  : "Publish to community 🌍"}
+              </button>
+            </div>
+
+            {/* Share + view (after publish) */}
+            {saved?.is_public && (
+              <div className="space-y-3 rounded-2xl bg-cocktail-cream p-4">
+                <p className="font-semibold text-cocktail-plum">
+                  🎉 Live in the gallery!{" "}
+                  <Link href={`/cocktail/${saved.id}`} className="underline">
+                    View it
+                  </Link>
+                </p>
+                <ShareButtons
+                  url={shareUrl}
+                  title={recipe.name}
+                  text={recipe.tasting_notes}
+                />
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

@@ -1,0 +1,71 @@
+// Shared domain types for Bob the AI Mixologist.
+
+export type AlcoholLevel = "alcohol-free" | "low-alcohol" | "full-strength";
+
+export type ModerationStatus = "pending" | "approved" | "rejected";
+
+/** The structured recipe shape returned by the AI recipe generator. */
+export interface GeneratedRecipe {
+  name: string;
+  ingredients: string[];
+  method: string[];
+  garnish: string;
+  glassware: string;
+  tasting_notes: string;
+  occasion: string;
+  alcohol_level: AlcoholLevel;
+  tags: string[];
+}
+
+/** A cocktail row as stored / returned by the API. */
+export interface Cocktail {
+  id: string;
+  user_id: string;
+  name: string;
+  prompt: string;
+  ingredients: string[];
+  method: string[];
+  garnish: string;
+  glassware: string;
+  tasting_notes: string;
+  occasion: string;
+  alcohol_level: AlcoholLevel;
+  tags: string[];
+  image_url: string | null;
+  is_public: boolean;
+  is_flagged: boolean;
+  moderation_status: ModerationStatus;
+  vote_count: number;
+  created_at: string;
+  // Joined / convenience fields
+  creator_username?: string;
+}
+
+export interface Comment {
+  id: string;
+  cocktail_id: string;
+  user_id: string;
+  username: string;
+  body: string;
+  is_flagged: boolean;
+  moderation_status: ModerationStatus;
+  created_at: string;
+}
+
+export interface ImageUsage {
+  used: number;
+  limit: number;
+  remaining: number;
+  period: string; // e.g. "2026-06"
+}
+
+export interface SponsoredBrand {
+  id: string;
+  name: string;
+  ingredient_keyword: string;
+  blurb: string;
+  cta_url: string | null;
+  is_active: boolean;
+}
+
+export type GallerySort = "trending" | "newest" | "most_voted";
