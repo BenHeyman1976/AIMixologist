@@ -9,6 +9,11 @@ others can browse, like, vote and comment.
 > app uses built-in **mock AI responses** and an **in-memory data store**, so you
 > can explore the entire flow immediately. Add Supabase + OpenAI keys to go live.
 
+> 📱 **iOS app:** there's now a native **Expo / React Native** app in [`mobile/`](mobile/)
+> with a TikTok-style vertical swipe feed. It runs on your iPhone via **Expo Go**
+> in ~2 minutes (`cd mobile && npm install && npx expo start`, then scan the QR).
+> This web app serves as the backend + landing page. See [`mobile/README.md`](mobile/README.md).
+
 ---
 
 ## ✨ Features
