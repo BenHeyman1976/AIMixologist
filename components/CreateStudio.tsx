@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import RecipeDetails from "@/components/RecipeDetails";
 import ShareButtons from "@/components/ShareButtons";
@@ -24,6 +24,19 @@ export default function CreateStudio({
   const [saveLoading, setSaveLoading] = useState(false);
   const [pubLoading, setPubLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // When the user arrives from the home page with an idea already typed,
+  // generate the recipe straight away — no second click needed. The ref
+  // guard stops React's dev StrictMode from firing it twice.
+  const autoRan = useRef(false);
+  useEffect(() => {
+    if (autoRan.current) return;
+    if (initialPrompt.trim().length >= 3) {
+      autoRan.current = true;
+      generateRecipe();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function generateRecipe() {
     if (prompt.trim().length < 3) return;

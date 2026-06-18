@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import "./globals.css";
+import { getCurrentUser, isLoggedIn } from "@/lib/auth";
+import LogoutButton from "@/components/LogoutButton";
 
 export const metadata: Metadata = {
   title: "Bob the AI Mixologist",
@@ -36,6 +38,8 @@ export default function RootLayout({
 }
 
 function SiteHeader() {
+  const loggedIn = isLoggedIn();
+  const user = getCurrentUser();
   return (
     <header className="sticky top-0 z-30 backdrop-blur bg-cocktail-cream/80 border-b border-cocktail-peach/30">
       <nav className="mx-auto max-w-6xl px-4 h-16 flex items-center justify-between">
@@ -45,17 +49,27 @@ function SiteHeader() {
             Bob<span className="text-cocktail-coral">.</span>
           </span>
         </Link>
-        <div className="flex items-center gap-1 sm:gap-3 text-sm font-semibold text-cocktail-plum">
-          <Link href="/gallery" className="px-3 py-2 rounded-full hover:bg-white/70">
-            Gallery
+        {loggedIn ? (
+          <div className="flex items-center gap-1 sm:gap-3 text-sm font-semibold text-cocktail-plum">
+            <Link href="/gallery" className="px-3 py-2 rounded-full hover:bg-white/70">
+              Gallery
+            </Link>
+            <Link
+              href="/profile"
+              className="hidden px-3 py-2 rounded-full hover:bg-white/70 sm:inline"
+            >
+              @{user.username}
+            </Link>
+            <LogoutButton />
+            <Link href="/create" className="btn-primary !px-4 !py-2 text-sm">
+              Create
+            </Link>
+          </div>
+        ) : (
+          <Link href="/login" className="btn-primary !px-4 !py-2 text-sm">
+            Sign in
           </Link>
-          <Link href="/profile" className="px-3 py-2 rounded-full hover:bg-white/70">
-            Profile
-          </Link>
-          <Link href="/create" className="btn-primary !px-4 !py-2 text-sm">
-            Create
-          </Link>
-        </div>
+        )}
       </nav>
     </header>
   );
