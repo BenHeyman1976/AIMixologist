@@ -38,6 +38,15 @@ export default function CreateStudio({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Bring the recipe into view the moment it appears, so it's obvious the
+  // generation worked (no "did anything happen?" scroll hunting).
+  const resultRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (recipe) {
+      resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [recipe]);
+
   async function generateRecipe() {
     if (prompt.trim().length < 3) return;
     setGenLoading(true);
@@ -160,29 +169,24 @@ export default function CreateStudio({
         </p>
       </div>
 
-      {/* Prompt */}
-      <div className="card p-5 space-y-3">
-        <textarea
-          className="input min-h-[110px] text-lg"
-          placeholder="e.g. Create a relaxing Aperol and Trip CBD spritz for summer"
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-        />
-        <div className="flex items-center gap-3">
+      {/* Initial prompt — shown only until the first recipe exists. */}
+      {!recipe && (
+        <div className="card p-5 space-y-3">
+          <textarea
+            className="input min-h-[110px] text-lg"
+            placeholder="e.g. Create a relaxing Aperol and Trip CBD spritz for summer"
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+          />
           <button
             onClick={generateRecipe}
             disabled={genLoading || prompt.trim().length < 3}
             className="btn-primary"
           >
-            {genLoading ? "Mixing…" : recipe ? "Regenerate 🔄" : "Generate recipe 🍹"}
+            {genLoading ? "Mixing your cocktail…" : "Generate recipe 🍹"}
           </button>
-          {recipe && (
-            <span className="text-sm text-cocktail-ink/60">
-              Not quite right? Tweak the prompt and regenerate.
-            </span>
-          )}
         </div>
-      </div>
+      )}
 
       {error && (
         <div className="rounded-2xl bg-cocktail-coral/10 border border-cocktail-coral/40 p-4 text-cocktail-coral">
@@ -190,9 +194,20 @@ export default function CreateStudio({
         </div>
       )}
 
-      {/* Result */}
+      {/* Big, obvious loading state while the first recipe is being made. */}
+      {genLoading && !recipe && (
+        <div className="card flex flex-col items-center justify-center gap-3 p-12 text-center">
+          <span className="text-5xl animate-bounce">🍹</span>
+          <p className="font-display text-xl font-bold text-cocktail-plum">
+            Bob is shaking things up…
+          </p>
+          <p className="text-sm text-cocktail-ink/60">Crafting your recipe</p>
+        </div>
+      )}
+
+      {/* Result — shown first so it's the first thing you see. */}
       {recipe && (
-        <div className="card overflow-hidden">
+        <div ref={resultRef} className="card overflow-hidden scroll-mt-20">
           {/* Hero image */}
           <div className="relative aspect-video bg-warm-gradient">
             {imageUrl ? (
@@ -261,6 +276,29 @@ export default function CreateStudio({
               </div>
             )}
           </div>
+        </div>
+      )}
+
+      {/* Tweak & regenerate — placed BELOW the recipe so you read the result
+          first. Drunk-proof: the result is front and centre, tweaking is a
+          deliberate scroll-down action. */}
+      {recipe && (
+        <div className="card p-5 space-y-3">
+          <h3 className="font-display text-lg font-bold text-cocktail-plum">
+            Not quite right? Tweak it 🔄
+          </h3>
+          <textarea
+            className="input min-h-[90px]"
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+          />
+          <button
+            onClick={generateRecipe}
+            disabled={genLoading || prompt.trim().length < 3}
+            className="btn-secondary"
+          >
+            {genLoading ? "Mixing…" : "Regenerate 🔄"}
+          </button>
         </div>
       )}
     </div>
