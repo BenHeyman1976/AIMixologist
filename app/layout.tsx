@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import Link from "next/link";
 import "./globals.css";
 import { getCurrentUser, isLoggedIn } from "@/lib/auth";
@@ -8,10 +8,28 @@ export const metadata: Metadata = {
   title: "Bob the AI Mixologist",
   description:
     "Turn any idea, mood or occasion into a stunning cocktail recipe — then generate a marketing-ready image and share it with the community.",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Bob",
+  },
+  icons: {
+    icon: "/icon-192.png",
+    apple: "/apple-touch-icon.png",
+  },
   openGraph: {
     title: "Bob the AI Mixologist",
     description: "AI-crafted cocktails, beautiful images, community-voted.",
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#FF6B6B",
+  // Let the app draw under the iPhone notch when launched from the home screen.
+  viewportFit: "cover",
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({

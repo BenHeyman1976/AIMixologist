@@ -1,4 +1,5 @@
 import type { GeneratedRecipe } from "@/lib/types";
+import ShopIngredients from "@/components/ShopIngredients";
 
 // Presentational recipe body — reused on the create page and detail page.
 export default function RecipeDetails({
@@ -47,6 +48,8 @@ export default function RecipeDetails({
           </ol>
         </div>
       </div>
+
+      <ShopIngredients ingredients={recipe.ingredients} />
 
       <div className="grid gap-4 sm:grid-cols-3 text-sm">
         <Fact label="Garnish" value={recipe.garnish} />

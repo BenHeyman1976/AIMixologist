@@ -14,7 +14,9 @@ export function middleware(req: NextRequest) {
     pathname.startsWith("/login") ||
     pathname.startsWith("/api") ||
     pathname.startsWith("/_next") ||
-    pathname === "/favicon.ico";
+    // PWA manifest + static assets (icons, images) must load without a session.
+    pathname === "/manifest.webmanifest" ||
+    /\.(png|jpg|jpeg|svg|ico|webmanifest|txt|webp)$/.test(pathname);
 
   if (isPublic) return NextResponse.next();
 
