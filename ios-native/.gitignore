@@ -1,0 +1,8 @@
+# Xcode user-specific & build artifacts (the project.pbxproj IS committed)
+xcuserdata/
+*.xcuserstate
+DerivedData/
+build/
+.DS_Store
+*.xcscmblueprint
+*.xccheckout

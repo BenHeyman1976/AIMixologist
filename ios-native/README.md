@@ -12,31 +12,19 @@ build and feel it immediately. One flag switches it to the real backend later.
 
 ---
 
-## 🛠️ Create the Xcode project (one-time, ~3 minutes)
+## 🛠️ Open & run — no setup needed
 
-These `.swift` files aren't an Xcode project yet (Xcode generates that). Do this:
+The Xcode project is already generated and committed. There's nothing to drag
+or add — it uses Xcode's modern **synchronized folder** format, so every `.swift`
+file in the `BobMixologist/` folder is picked up automatically (and any files we
+add later just appear after a `git pull`).
 
-1. **Xcode → File → New → Project… → iOS → App**, then:
-   - Product Name: **BobMixologist**
-   - Interface: **SwiftUI**, Language: **Swift**
-   - (Storage: None. Uncheck tests if you like.)
-   - Save it somewhere **outside** this repo (e.g. `~/Developer/`), so the
-     project folder never clashes with the source folder below.
-2. In the new project, **delete the two files Xcode auto-created**:
-   `BobMixologistApp.swift` and `ContentView.swift`
-   (right-click → Delete → *Move to Trash*). Our `BobApp.swift` replaces them.
-3. **Add the source files**: in the Project Navigator click the blue project
-   icon, then menu **File → Add Files to "BobMixologist"…** and select the
-   **`Theme`, `Models`, `Data`, `Views` folders and `BobApp.swift`** from
-   `ios-native/Sources/` (the folder is named `Sources` so it never collides
-   with your project's own `BobMixologist` folder).
-   - In the dialog: tick **"Copy items if needed"** and
-     **"Create groups"**, and make sure your app target is checked.
-4. Set the **deployment target to iOS 17.0** (or leave the default):
-   project → your target → **General → Minimum Deployments**.
-5. Pick an iPhone simulator (or your device) and press **⌘R**.
+1. **Open** `ios-native/BobMixologist/BobMixologist.xcodeproj` (double-click it
+   in Finder, or `open ios-native/BobMixologist/BobMixologist.xcodeproj`).
+2. Pick an iPhone simulator (top bar) and press **⌘R**.
 
-You should land on the login screen → tap any sign-in → swipe the feed. 🍹
+That's it — you should land on the login screen → tap any sign-in → swipe the
+feed. 🍹
 
 > Building to your **physical iPhone**: select your device, then set
 > **Signing & Capabilities → Team** to your Apple Developer account and Xcode
