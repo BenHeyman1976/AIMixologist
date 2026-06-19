@@ -59,21 +59,26 @@ You should land on the login screen → tap any sign-in → swipe the feed. 🍹
 ## 🔌 Switching to the real backend
 
 Everything funnels through `Data/AppStore.swift`. To use the live backend
-(the Next.js app in the repo root) instead of mock data:
+(the Next.js app in the repo root) instead of mock data, just flip two values:
 
 ```swift
 let useRemote = true
 let apiBaseURL = "http://192.168.1.42:3000"  // your Mac's LAN IP, or deployed URL
 ```
 
-Then fill in the branches marked `TODO(remote)` (recipe + image generation) to
-`URLSession`-call the matching endpoints under `../app/api/*`. The view layer
-doesn't change.
+The networking is **already implemented** in `Data/BackendAPI.swift` (feed,
+recipe generation, image generation) and decodes the backend's JSON into the
+Swift models. If any call fails, the store falls back to local mock behaviour
+so the app never gets stuck. The view layer doesn't change.
+
+> Run the backend first (`npm run dev` in the repo root). For a physical
+> device, use your Mac's LAN IP (not `localhost`), and note iOS requires HTTPS
+> unless you allow the local HTTP exception in Info.plist (App Transport
+> Security) during development.
 
 ## 🧭 Roadmap markers (search the code)
 
 - `TODO(auth)` — swap mock login for **Supabase** Google/Apple/email auth.
-- `TODO(remote)` — call the real generation endpoints.
 - `TODO(billing)` — paid plan raises the monthly image allowance.
 - `TODO(affiliate)` — drop in your Amazon Associates tag / network deep links
   (`Affiliates.amazonTag`).

@@ -30,6 +30,8 @@ struct FeedView: View {
         .overlay(alignment: .top) { header }
         .sheet(item: $recipeSheet) { RecipeSheetView(cocktail: $0) }
         .sheet(item: $commentsSheet) { CommentsView(cocktail: $0) }
+        // Loads the live feed in remote mode; no-op in local/mock mode.
+        .task(id: sort) { await store.refreshFeed(sort: sort) }
     }
 
     private var header: some View {

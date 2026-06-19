@@ -6,8 +6,9 @@ import SwiftUI
 //
 // Defaults to LOCAL mode: bundled mock data + on-device mock generation, so
 // the app runs instantly with no backend. To use the real web backend, set
-// `useRemote = true` and `apiBaseURL` (the Next.js app in the parent folder),
-// then implement the remote branches marked TODO(remote).
+// `useRemote = true` and `apiBaseURL` (the Next.js app in the parent folder).
+// Remote calls go through BackendAPI; if any call fails the store falls back
+// to local mock behaviour so the app never gets stuck.
 // ─────────────────────────────────────────────────────────────
 
 @MainActor
@@ -15,6 +16,8 @@ final class AppStore: ObservableObject {
     // Config
     let useRemote = false
     let apiBaseURL = "" // e.g. "http://192.168.1.42:3000" or your deployed URL
+
+    private var backend: BackendAPI { BackendAPI(baseURL: apiBaseURL) }
 
     // Session
     @Published var user: SessionUser?
@@ -40,6 +43,16 @@ final class AppStore: ObservableObject {
     func logout() { user = nil }
 
     // MARK: - Feed
+    /// In remote mode, fetches the live feed and replaces local data. In local
+    /// mode this is a no-op (the seed data is already loaded). Call from a view
+    /// `.task`. Falls back silently to whatever is already loaded on error.
+    func refreshFeed(sort: FeedSort) async {
+        guard useRemote else { return }
+        if let fetched = try? await backend.fetchFeed(sort: sort) {
+            cocktails = fetched
+        }
+    }
+
     func feed(sort: FeedSort) -> [Cocktail] {
         switch sort {
         case .mostVoted:
@@ -59,7 +72,10 @@ final class AppStore: ObservableObject {
 
     // MARK: - Recipe generation (mock — mirrors web lib/ai.ts)
     func generateRecipe(prompt: String) async -> Recipe {
-        // TODO(remote): POST \(apiBaseURL)/api/generate-recipe when useRemote.
+        if useRemote, let remote = try? await backend.generateRecipe(prompt: prompt) {
+            return remote
+        }
+        // Local mock generation (also the fallback if the backend call fails).
         try? await Task.sleep(for: .milliseconds(900))
         let p = prompt.lowercased()
 
@@ -114,8 +130,19 @@ final class AppStore: ObservableObject {
     enum ImageResult { case success(String), limitReached }
 
     func generateImage(name: String) async -> ImageResult {
+        if useRemote {
+            do {
+                let (url, usage) = try await backend.generateImage(name: name, prompt: name)
+                if let usage { imageUsage = usage }
+                return .success(url)
+            } catch BackendError.imageLimit {
+                return .limitReached
+            } catch {
+                return .limitReached
+            }
+        }
+        // Local mock generation, quota-limited.
         guard imageUsage.remaining > 0 else { return .limitReached }
-        // TODO(remote): POST \(apiBaseURL)/api/generate-image when useRemote.
         try? await Task.sleep(for: .milliseconds(1200))
         imageUsage.used += 1
         return .success(MockData.img(name))
