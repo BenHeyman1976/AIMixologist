@@ -6,6 +6,10 @@
 	objectVersion = 70;
 	objects = {
 
+/* Begin PBXFileReference section */
+		E1A0CA0E0000000000000006 /* BobMixologist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BobMixologist.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		E1A0CA0E0000000000000004 /* BobMixologist */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = BobMixologist; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -32,6 +36,7 @@
 		E1A0CA0E0000000000000003 /* Products */ = {
 			isa = PBXGroup;
 			children = (
+				E1A0CA0E0000000000000006 /* BobMixologist.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -58,6 +63,7 @@
 			packageProductDependencies = (
 			);
 			productName = BobMixologist;
+			productReference = E1A0CA0E0000000000000006 /* BobMixologist.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
