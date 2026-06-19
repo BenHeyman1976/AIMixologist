@@ -13,7 +13,10 @@ struct LoginView: View {
                 VStack(spacing: 6) {
                     Text("🍸").font(.system(size: 64))
                     Text("Siply").font(.system(size: 56, weight: .black)).foregroundStyle(.white)
-                    Text("Create stunning cocktails, share them, get voted up.")
+                    Text("Your cocktail companion.")
+                        .font(.system(size: 18, weight: .heavy))
+                        .foregroundStyle(Theme.peach)
+                    Text("Create stunning cocktails, plan your night, share with the crew.")
                         .font(.system(size: 16))
                         .foregroundStyle(.white.opacity(0.8))
                         .multilineTextAlignment(.center)

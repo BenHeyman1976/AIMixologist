@@ -206,4 +206,71 @@ final class AppStore: ObservableObject {
     }
 
     func rating(for cocktailId: String) -> Int? { ratings[cocktailId] }
+
+    // MARK: - Night planner
+    // Turns a free-text evening description into a paced, responsible itinerary.
+    // TODO(remote): call a /api/plan-night backend endpoint when useRemote.
+    func planNight(prompt: String) async -> NightPlan {
+        try? await Task.sleep(for: .milliseconds(900))
+        let p = prompt.lowercased()
+
+        let heavy = ["wasted", "messy", "big one", "big night", "crawl",
+                     "all night", "get drunk", "bars", "smashed"].contains { p.contains($0) }
+        let preEvent = ["show", "theatre", "theater", "gig", "concert", "cinema",
+                        "dinner", "reservation", "table", "film", "musical", "play",
+                        "before"].contains { p.contains($0) }
+
+        // Cuisine-aware pairing.
+        let pairing: (name: String, note: String)
+        if p.contains("italian") {
+            pairing = ("Negroni", "Italian classics love a bittersweet Negroni or an Aperol Spritz")
+        } else if p.contains("mexican") {
+            pairing = ("Tommy's Margarita", "Mexican food sings with a fresh lime Margarita or Paloma")
+        } else if p.contains("japanese") || p.contains("sushi") || p.contains("asian") {
+            pairing = ("Yuzu Highball", "Clean and crisp — a citrus highball cuts through beautifully")
+        } else if p.contains("indian") || p.contains("curry") {
+            pairing = ("Gin & Tonic", "A crisp G&T is a curry-house hero")
+        } else {
+            pairing = ("House Spritz", "A light, fragrant spritz to set the tone")
+        }
+
+        let safety = "Know your limits, never drink-drive, eat well and look out for your group. Siply encourages drinking responsibly. 18+."
+
+        if heavy {
+            return NightPlan(
+                headline: "A long one — let's pace it so you enjoy the whole night 💪",
+                items: [
+                    .init(time: "Before", kind: .food, title: "Eat first", detail: "A proper meal before drink #1 — it changes everything."),
+                    .init(time: "Bar 1", kind: .drink, title: "Open light", detail: "Start with a lower-ABV spritz or a tall, sessionable highball."),
+                    .init(time: nil, kind: .water, title: "Water between rounds", detail: "One glass of water for every drink. Non-negotiable on a big one."),
+                    .init(time: "Bars 2–4", kind: .drink, title: "Alternate strengths", detail: "Cocktail, then a soft or low-alcohol round. Sip — don't shot."),
+                    .init(time: "Halfway", kind: .food, title: "Refuel", detail: "Grab a snack — pizza slice, dumplings, anything to keep you steady."),
+                    .init(time: "Bars 5–8", kind: .drink, title: "Slow the pace", detail: "Stretch each drink over 45+ minutes. Quality over quantity."),
+                    .init(time: "Last bars", kind: .water, title: "Wind down", detail: "Switch to soft drinks for the final venues. Future-you says thanks."),
+                    .init(time: "Home", kind: .move, title: "Plan your way home", detail: "Book the cab now and share your location with a friend.")
+                ],
+                safety: safety)
+        } else if preEvent {
+            return NightPlan(
+                headline: "A civilised pre-show couple — relaxed, not rushed 🎭",
+                items: [
+                    .init(time: "6:30", kind: .drink, title: "Drink one: \(pairing.name)", detail: pairing.note + "."),
+                    .init(time: "7:00", kind: .water, title: "A glass of water", detail: "Hydrate so you enjoy the show clear-headed."),
+                    .init(time: "7:15", kind: .drink, title: "Drink two: something lighter", detail: "A low-ABV spritz or a glass of prosecco to finish."),
+                    .init(time: "7:40", kind: .food, title: "Pre-theatre bite", detail: "A small plate before you head in — bruschetta or arancini."),
+                    .init(time: "8:00", kind: .move, title: "Curtain up", detail: "Two drinks in, perfectly paced. Enjoy the show!")
+                ],
+                safety: safety)
+        } else {
+            return NightPlan(
+                headline: "A relaxed, well-paced plan 🥂",
+                items: [
+                    .init(time: nil, kind: .drink, title: "Start: \(pairing.name)", detail: pairing.note + "."),
+                    .init(time: nil, kind: .water, title: "Hydrate alongside", detail: "A glass of water with it keeps the night smooth."),
+                    .init(time: nil, kind: .drink, title: "Second round", detail: "Try a low-alcohol option to stretch the evening out."),
+                    .init(time: nil, kind: .food, title: "Grab a bite", detail: "A little food keeps the good times going longer.")
+                ],
+                safety: safety)
+        }
+    }
 }

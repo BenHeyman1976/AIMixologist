@@ -5,7 +5,7 @@ import { getCurrentUser, isLoggedIn } from "@/lib/auth";
 import LogoutButton from "@/components/LogoutButton";
 
 export const metadata: Metadata = {
-  title: "Siply — AI cocktails, made social",
+  title: "Siply — Your Cocktail Companion",
   description:
     "Turn any idea, mood or occasion into a stunning cocktail recipe — then generate a beautiful image and share it with the community.",
   manifest: "/manifest.webmanifest",
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     apple: "/apple-touch-icon.png",
   },
   openGraph: {
-    title: "Siply — AI cocktails, made social",
+    title: "Siply — Your Cocktail Companion",
     description: "AI-crafted cocktails, beautiful images, community-voted.",
   },
 };
