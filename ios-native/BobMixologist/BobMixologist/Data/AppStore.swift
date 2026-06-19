@@ -13,9 +13,20 @@ import SwiftUI
 
 @MainActor
 final class AppStore: ObservableObject {
-    // Config
-    let useRemote = false
-    let apiBaseURL = "" // e.g. "http://192.168.1.42:3000" or your deployed URL
+    // Config — editable in-app via Settings, persisted in UserDefaults.
+    @Published var useRemote: Bool {
+        didSet { UserDefaults.standard.set(useRemote, forKey: Self.kUseRemote) }
+    }
+    @Published var apiBaseURL: String {
+        didSet { UserDefaults.standard.set(apiBaseURL, forKey: Self.kBaseURL) }
+    }
+    private static let kUseRemote = "siply.useRemote"
+    private static let kBaseURL = "siply.apiBaseURL"
+
+    init() {
+        useRemote = UserDefaults.standard.bool(forKey: Self.kUseRemote)
+        apiBaseURL = UserDefaults.standard.string(forKey: Self.kBaseURL) ?? ""
+    }
 
     private var backend: BackendAPI { BackendAPI(baseURL: apiBaseURL) }
 
@@ -211,6 +222,9 @@ final class AppStore: ObservableObject {
     // Turns a free-text evening description into a paced, responsible itinerary.
     // TODO(remote): call a /api/plan-night backend endpoint when useRemote.
     func planNight(prompt: String) async -> NightPlan {
+        if useRemote, let remote = try? await backend.fetchPlan(prompt: prompt) {
+            return remote
+        }
         try? await Task.sleep(for: .milliseconds(900))
         let p = prompt.lowercased()
 

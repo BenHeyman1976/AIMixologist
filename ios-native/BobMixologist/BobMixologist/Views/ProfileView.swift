@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ProfileView: View {
     @EnvironmentObject var store: AppStore
+    @State private var showSettings = false
 
     private let cols = [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)]
 
@@ -21,6 +22,10 @@ struct ProfileView: View {
                             .foregroundStyle(Theme.ink.opacity(0.6))
                     }
                     Spacer()
+                    Button { showSettings = true } label: {
+                        Image(systemName: "gearshape.fill")
+                            .font(.system(size: 20)).foregroundStyle(Theme.plum)
+                    }
                     Button("Log out") { store.logout() }
                         .font(.system(size: 15, weight: .heavy)).foregroundStyle(Theme.coral)
                 }
@@ -69,6 +74,7 @@ struct ProfileView: View {
             .padding(.top, 8)
         }
         .background(Theme.cream)
+        .sheet(isPresented: $showSettings) { SettingsView() }
     }
 
     private var published: [Cocktail] { store.myCocktails.filter { $0.isPublic } }

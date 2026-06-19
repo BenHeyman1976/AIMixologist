@@ -78,7 +78,33 @@ struct BackendAPI {
     private struct UsageDTO: Decodable { let used: Int; let limit: Int }
     private struct ImageResponse: Decodable { let image_url: String?; let usage: UsageDTO? }
 
+    private struct PlanItemDTO: Decodable {
+        let time: String?
+        let kind: String
+        let title: String
+        let detail: String
+        func toModel() -> NightPlanItem {
+            NightPlanItem(time: time,
+                          kind: PlanItemKind(rawValue: kind) ?? .tip,
+                          title: title, detail: detail)
+        }
+    }
+    private struct PlanDTO: Decodable {
+        let headline: String
+        let items: [PlanItemDTO]
+        let safety: String
+    }
+    private struct PlanResponse: Decodable { let plan: PlanDTO }
+
     // MARK: Requests
+
+    func fetchPlan(prompt: String) async throws -> NightPlan {
+        let data = try await post("/api/plan-night", body: ["prompt": prompt])
+        let dto = try JSONDecoder().decode(PlanResponse.self, from: data).plan
+        return NightPlan(headline: dto.headline,
+                         items: dto.items.map { $0.toModel() },
+                         safety: dto.safety)
+    }
 
     func fetchFeed(sort: FeedSort) async throws -> [Cocktail] {
         let sortParam = sort == .mostVoted ? "most_voted" : sort.rawValue

@@ -214,6 +214,126 @@ function generateImageMock(recipeName: string): GeneratedImage {
   };
 }
 
+// ── Night planner ────────────────────────────────────────────
+
+export type PlanKind = "drink" | "food" | "water" | "tip" | "move";
+export interface PlanItem {
+  time: string | null;
+  kind: PlanKind;
+  title: string;
+  detail: string;
+}
+export interface NightPlan {
+  headline: string;
+  items: PlanItem[];
+  safety: string;
+}
+
+const PLAN_SYSTEM_PROMPT = `You are Siply, a responsible cocktail companion. Given a description of
+someone's evening (timings, food, vibe, how big a night), produce a paced drink
+itinerary that prioritises BOTH enjoyment and responsible drinking: pacing,
+a glass of water between drinks, eating, knowing limits, and planning transport
+home. Pair drinks to any cuisine mentioned. Be warm and specific.
+
+You MUST NOT encourage excessive, rapid or unsafe drinking. Always include
+water and food steps and a transport-home reminder for big nights. 18+ only.
+
+Respond with ONLY valid minified JSON matching exactly:
+{"headline":"","items":[{"time":null,"kind":"drink","title":"","detail":""}],"safety":""}
+Where "kind" is one of: "drink","food","water","tip","move". "time" may be a
+clock time, a label like "Bar 2", or null.`;
+
+const PLAN_SAFETY =
+  "Know your limits, never drink-drive, eat well and look out for your group. Siply encourages drinking responsibly. 18+.";
+
+export async function generatePlan(prompt: string): Promise<NightPlan> {
+  if (AI_MODE === "openai") {
+    const client = getOpenAI();
+    const completion = await client.chat.completions.create({
+      model: TEXT_MODEL,
+      response_format: { type: "json_object" },
+      messages: [
+        { role: "system", content: PLAN_SYSTEM_PROMPT },
+        { role: "user", content: prompt },
+      ],
+      temperature: 0.7,
+    });
+    const parsed = JSON.parse(completion.choices[0]?.message?.content ?? "{}");
+    return coercePlan(parsed);
+  }
+  return generatePlanMock(prompt);
+}
+
+function coercePlan(parsed: any): NightPlan {
+  const kinds: PlanKind[] = ["drink", "food", "water", "tip", "move"];
+  const items: PlanItem[] = Array.isArray(parsed.items)
+    ? parsed.items.map((i: any) => ({
+        time: i?.time ? String(i.time) : null,
+        kind: kinds.includes(i?.kind) ? i.kind : "tip",
+        title: String(i?.title ?? ""),
+        detail: String(i?.detail ?? ""),
+      }))
+    : [];
+  return {
+    headline: String(parsed.headline || "Here's your plan for the night."),
+    items,
+    safety: String(parsed.safety || PLAN_SAFETY),
+  };
+}
+
+/** Mock planner — mirrors the on-device iOS logic. */
+function generatePlanMock(prompt: string): NightPlan {
+  const p = prompt.toLowerCase();
+  const heavy = ["wasted", "messy", "big one", "big night", "crawl", "all night", "get drunk", "bars", "smashed"].some((k) => p.includes(k));
+  const preEvent = ["show", "theatre", "theater", "gig", "concert", "cinema", "dinner", "reservation", "table", "film", "musical", "play", "before"].some((k) => p.includes(k));
+
+  let pairing = { name: "House Spritz", note: "A light, fragrant spritz to set the tone" };
+  if (p.includes("italian")) pairing = { name: "Negroni", note: "Italian classics love a bittersweet Negroni or an Aperol Spritz" };
+  else if (p.includes("mexican")) pairing = { name: "Tommy's Margarita", note: "Mexican food sings with a fresh lime Margarita or Paloma" };
+  else if (p.includes("japanese") || p.includes("sushi") || p.includes("asian")) pairing = { name: "Yuzu Highball", note: "Clean and crisp — a citrus highball cuts through beautifully" };
+  else if (p.includes("indian") || p.includes("curry")) pairing = { name: "Gin & Tonic", note: "A crisp G&T is a curry-house hero" };
+
+  if (heavy) {
+    return {
+      headline: "A long one — let's pace it so you enjoy the whole night 💪",
+      items: [
+        { time: "Before", kind: "food", title: "Eat first", detail: "A proper meal before drink #1 — it changes everything." },
+        { time: "Bar 1", kind: "drink", title: "Open light", detail: "Start with a lower-ABV spritz or a tall, sessionable highball." },
+        { time: null, kind: "water", title: "Water between rounds", detail: "One glass of water for every drink. Non-negotiable on a big one." },
+        { time: "Bars 2–4", kind: "drink", title: "Alternate strengths", detail: "Cocktail, then a soft or low-alcohol round. Sip — don't shot." },
+        { time: "Halfway", kind: "food", title: "Refuel", detail: "Grab a snack to keep you steady." },
+        { time: "Bars 5–8", kind: "drink", title: "Slow the pace", detail: "Stretch each drink over 45+ minutes." },
+        { time: "Last bars", kind: "water", title: "Wind down", detail: "Switch to soft drinks for the final venues." },
+        { time: "Home", kind: "move", title: "Plan your way home", detail: "Book the cab now and share your location with a friend." },
+      ],
+      safety: PLAN_SAFETY,
+    };
+  }
+  if (preEvent) {
+    return {
+      headline: "A civilised pre-show couple — relaxed, not rushed 🎭",
+      items: [
+        { time: "6:30", kind: "drink", title: `Drink one: ${pairing.name}`, detail: pairing.note + "." },
+        { time: "7:00", kind: "water", title: "A glass of water", detail: "Hydrate so you enjoy the show clear-headed." },
+        { time: "7:15", kind: "drink", title: "Drink two: something lighter", detail: "A low-ABV spritz or a glass of prosecco to finish." },
+        { time: "7:40", kind: "food", title: "Pre-theatre bite", detail: "A small plate before you head in." },
+        { time: "8:00", kind: "move", title: "Curtain up", detail: "Two drinks in, perfectly paced. Enjoy the show!" },
+      ],
+      safety: PLAN_SAFETY,
+    };
+  }
+  return {
+    headline: "A relaxed, well-paced plan 🥂",
+    items: [
+      { time: null, kind: "drink", title: `Start: ${pairing.name}`, detail: pairing.note + "." },
+      { time: null, kind: "water", title: "Hydrate alongside", detail: "A glass of water with it keeps the night smooth." },
+      { time: null, kind: "drink", title: "Second round", detail: "Try a low-alcohol option to stretch the evening out." },
+      { time: null, kind: "food", title: "Grab a bite", detail: "A little food keeps the good times going longer." },
+    ],
+    safety: PLAN_SAFETY,
+  };
+}
+
 export function aiMode(): string {
   return AI_MODE;
 }
