@@ -20,17 +20,20 @@ These `.swift` files aren't an Xcode project yet (Xcode generates that). Do this
    - Product Name: **BobMixologist**
    - Interface: **SwiftUI**, Language: **Swift**
    - (Storage: None. Uncheck tests if you like.)
-   - Save it somewhere, e.g. inside this `ios-native/` folder.
+   - Save it somewhere **outside** this repo (e.g. `~/Developer/`), so the
+     project folder never clashes with the source folder below.
 2. In the new project, **delete the two files Xcode auto-created**:
    `BobMixologistApp.swift` and `ContentView.swift`
    (right-click → Delete → *Move to Trash*). Our `BobApp.swift` replaces them.
-3. **Add the source files**: drag the **`Theme`, `Models`, `Data`, `Views`**
-   folders **and `BobApp.swift`** from `ios-native/BobMixologist/` into the
-   Xcode project navigator.
+3. **Add the source files**: in the Project Navigator click the blue project
+   icon, then menu **File → Add Files to "BobMixologist"…** and select the
+   **`Theme`, `Models`, `Data`, `Views` folders and `BobApp.swift`** from
+   `ios-native/Sources/` (the folder is named `Sources` so it never collides
+   with your project's own `BobMixologist` folder).
    - In the dialog: tick **"Copy items if needed"** and
      **"Create groups"**, and make sure your app target is checked.
-4. Set the **deployment target to iOS 17.0**:
-   project → your target → **General → Minimum Deployments → iOS 17.0**.
+4. Set the **deployment target to iOS 17.0** (or leave the default):
+   project → your target → **General → Minimum Deployments**.
 5. Pick an iPhone simulator (or your device) and press **⌘R**.
 
 You should land on the login screen → tap any sign-in → swipe the feed. 🍹
