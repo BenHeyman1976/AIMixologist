@@ -4,6 +4,7 @@ import SwiftUI
 struct RecipeSheetView: View {
     let cocktail: Cocktail
     @Environment(\.dismiss) private var dismiss
+    @State private var showBarman = false
 
     private var notes: [String] { Compliance.notes(for: cocktail.recipe) }
     private var shoppable: [String] { cocktail.recipe.ingredients.filter(Affiliates.isShoppable) }
@@ -25,6 +26,21 @@ struct RecipeSheetView: View {
                         .padding(.top, 14)
                     Text("@\(cocktail.creatorUsername) · \(cocktail.recipe.occasion)")
                         .font(.subheadline).foregroundStyle(Theme.ink.opacity(0.6))
+
+                    // Big, glanceable recipe to show staff in a busy/noisy venue.
+                    Button { showBarman = true } label: {
+                        HStack {
+                            Image(systemName: "megaphone.fill")
+                            Text("Tell the barman")
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                        }
+                        .font(.system(size: 17, weight: .heavy))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 18).padding(.vertical, 14)
+                        .background(Theme.plum, in: Capsule())
+                    }
+                    .padding(.top, 16)
 
                     section("Ingredients") {
                         ForEach(Array(cocktail.recipe.ingredients.enumerated()), id: \.offset) { _, ing in
@@ -88,6 +104,9 @@ struct RecipeSheetView: View {
             }
         }
         .presentationDragIndicator(.visible)
+        .fullScreenCover(isPresented: $showBarman) {
+            BarmanView(cocktail: cocktail)
+        }
     }
 
     @ViewBuilder
