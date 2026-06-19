@@ -29,8 +29,9 @@ final class AppStore: ObservableObject {
 
     // MARK: - Auth (mock)
     // TODO(auth): replace with Supabase Google/Apple OAuth + email magic links.
-    func login(_ method: AuthMethod, email: String = "") async {
-        try? await Task.sleep(for: .milliseconds(400))
+
+    /// Signs the user in immediately (synchronous), so the UI always advances.
+    func signIn(_ method: AuthMethod, email: String = "") {
         let username: String
         switch method {
         case .email: username = email.split(separator: "@").first.map(String.init)?.lowercased() ?? "mixologist"
@@ -38,6 +39,11 @@ final class AppStore: ObservableObject {
         case .apple: username = "apple_user"
         }
         user = SessionUser(id: "me", username: username, plan: "free")
+    }
+
+    /// Enter without a provider — a guaranteed path into the app.
+    func continueAsGuest() {
+        user = SessionUser(id: "me", username: "guest", plan: "free")
     }
 
     func logout() { user = nil }

@@ -5,7 +5,6 @@ import SwiftUI
 struct LoginView: View {
     @EnvironmentObject var store: AppStore
     @State private var email = ""
-    @State private var loading: AuthMethod?
 
     var body: some View {
         ZStack {
@@ -22,10 +21,12 @@ struct LoginView: View {
                 }
 
                 VStack(spacing: 12) {
-                    PrimaryButton(title: " Continue with Apple", variant: .dark,
-                                  loading: loading == .apple) { signIn(.apple) }
-                    PrimaryButton(title: "Continue with Google", variant: .secondary,
-                                  loading: loading == .google) { signIn(.google) }
+                    PrimaryButton(title: " Continue with Apple", variant: .dark) {
+                        store.signIn(.apple)
+                    }
+                    PrimaryButton(title: "Continue with Google", variant: .secondary) {
+                        store.signIn(.google)
+                    }
 
                     HStack {
                         Rectangle().fill(.white.opacity(0.2)).frame(height: 1)
@@ -41,8 +42,16 @@ struct LoginView: View {
                         .background(Color.white.opacity(0.1), in: RoundedRectangle(cornerRadius: 16))
 
                     PrimaryButton(title: "Continue with email",
-                                  loading: loading == .email,
-                                  disabled: !email.contains("@")) { signIn(.email) }
+                                  disabled: !email.contains("@")) {
+                        store.signIn(.email, email: email)
+                    }
+
+                    Button("Skip for now — continue as guest") {
+                        store.continueAsGuest()
+                    }
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(.white.opacity(0.85))
+                    .padding(.top, 4)
 
                     Text("Demo sign-in for the preview. By continuing you confirm you are 18+. Please drink responsibly.")
                         .font(.system(size: 12))
@@ -52,14 +61,6 @@ struct LoginView: View {
                 }
             }
             .padding(26)
-        }
-    }
-
-    private func signIn(_ method: AuthMethod) {
-        loading = method
-        Task {
-            await store.login(method, email: email)
-            loading = nil
         }
     }
 }
