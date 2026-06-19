@@ -5,27 +5,27 @@ import { getCurrentUser, isLoggedIn } from "@/lib/auth";
 import LogoutButton from "@/components/LogoutButton";
 
 export const metadata: Metadata = {
-  title: "Bob the AI Mixologist",
+  title: "Siply — AI cocktails, made social",
   description:
-    "Turn any idea, mood or occasion into a stunning cocktail recipe — then generate a marketing-ready image and share it with the community.",
+    "Turn any idea, mood or occasion into a stunning cocktail recipe — then generate a beautiful image and share it with the community.",
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Bob",
+    title: "Siply",
   },
   icons: {
     icon: "/icon-192.png",
     apple: "/apple-touch-icon.png",
   },
   openGraph: {
-    title: "Bob the AI Mixologist",
+    title: "Siply — AI cocktails, made social",
     description: "AI-crafted cocktails, beautiful images, community-voted.",
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#FF6B6B",
+  themeColor: "#E85D8A",
   // Let the app draw under the iPhone notch when launched from the home screen.
   viewportFit: "cover",
   width: "device-width",
@@ -64,7 +64,7 @@ function SiteHeader() {
         <Link href="/" className="flex items-center gap-2">
           <span className="text-2xl">🍹</span>
           <span className="font-display text-xl font-bold text-cocktail-plum">
-            Bob<span className="text-cocktail-coral">.</span>
+            Siply<span className="text-cocktail-coral">.</span>
           </span>
         </Link>
         {loggedIn ? (
@@ -98,7 +98,7 @@ function SiteFooter() {
     <footer className="border-t border-cocktail-peach/30 bg-white/50">
       <div className="mx-auto max-w-6xl px-4 py-8 text-sm text-cocktail-plum/70 space-y-2">
         <p className="font-semibold">
-          🍹 Bob the AI Mixologist — drink creativity, responsibly.
+          🍸 Siply — drink creativity, responsibly.
         </p>
         <p>
           Please drink responsibly. 18+ only where alcohol is served. Wellness

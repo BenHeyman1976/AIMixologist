@@ -43,6 +43,9 @@ struct BarmanView: View {
 
                 ScrollView(showsIndicators: false) {
                     VStack(alignment: .leading, spacing: 16) {
+                        Text("INGREDIENTS")
+                            .font(.system(size: 14, weight: .heavy)).tracking(2)
+                            .foregroundStyle(Theme.coral)
                         ForEach(Array(lines.enumerated()), id: \.offset) { _, line in
                             HStack(alignment: .firstTextBaseline, spacing: 12) {
                                 Circle().fill(Theme.coral).frame(width: 12, height: 12)
@@ -50,6 +53,23 @@ struct BarmanView: View {
                                 Text(line)
                                     .font(.system(size: 30, weight: .heavy))
                                     .foregroundStyle(Theme.ink)
+                            }
+                        }
+
+                        if !cocktail.recipe.method.isEmpty {
+                            Text("HOW TO SERVE")
+                                .font(.system(size: 14, weight: .heavy)).tracking(2)
+                                .foregroundStyle(Theme.coral)
+                                .padding(.top, 14)
+                            ForEach(Array(cocktail.recipe.method.enumerated()), id: \.offset) { i, step in
+                                HStack(alignment: .firstTextBaseline, spacing: 12) {
+                                    Text("\(i + 1)")
+                                        .font(.system(size: 24, weight: .black))
+                                        .foregroundStyle(Theme.coral)
+                                    Text(step)
+                                        .font(.system(size: 23, weight: .bold))
+                                        .foregroundStyle(Theme.ink)
+                                }
                             }
                         }
                     }

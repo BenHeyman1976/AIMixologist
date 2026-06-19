@@ -79,7 +79,7 @@ struct FeedItemView: View {
     }
 
     private var shareText: String {
-        "\(cocktail.name) 🍹 — \(cocktail.tastingNotes)\nMade with Bob the AI Mixologist"
+        "\(cocktail.name) 🍸 — \(cocktail.tastingNotes)\nMade with Siply"
     }
 
     private func railButton(_ systemName: String, label: String, tint: Color = .white,

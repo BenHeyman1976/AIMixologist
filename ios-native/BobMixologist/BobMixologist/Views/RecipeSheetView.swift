@@ -3,6 +3,7 @@ import SwiftUI
 /// Bottom sheet with the full recipe + "shop the ingredients" affiliate links.
 struct RecipeSheetView: View {
     let cocktail: Cocktail
+    @EnvironmentObject private var store: AppStore
     @Environment(\.dismiss) private var dismiss
     @State private var showBarman = false
 
@@ -14,7 +15,7 @@ struct RecipeSheetView: View {
     private var shoppingListText: String {
         var s = "🍸 \(cocktail.name) — shopping list\n\n"
         for ing in cocktail.recipe.ingredients { s += "• \(ing)\n" }
-        s += "\nServe in: \(cocktail.recipe.glassware)\n\nMade with Bob the AI Mixologist 🍹\nPlease drink responsibly. 18+."
+        s += "\nServe in: \(cocktail.recipe.glassware)\n\nMade with Siply 🍸\nPlease drink responsibly. 18+."
         return s
     }
 
@@ -100,6 +101,9 @@ struct RecipeSheetView: View {
                         }
                     }
 
+                    // Post-drink feedback — "did you like it?" after trying it.
+                    triedItSection
+
                     ForEach(notes, id: \.self) { note in
                         Text("⚠️  \(note)")
                             .font(.footnote).foregroundStyle(Theme.plum)
@@ -122,6 +126,42 @@ struct RecipeSheetView: View {
         .presentationDragIndicator(.visible)
         .fullScreenCover(isPresented: $showBarman) {
             BarmanView(cocktail: cocktail)
+        }
+    }
+
+    // "Did you like it?" — shown so people can rate a drink after trying it.
+    private var triedItSection: some View {
+        let current = store.rating(for: cocktail.id)
+        return VStack(alignment: .leading, spacing: 10) {
+            Text(current == nil ? "Tried it? How was it?" : "Thanks for the feedback! 🥂")
+                .font(.system(size: 18, weight: .heavy)).foregroundStyle(Theme.plum)
+            HStack(spacing: 10) {
+                ratingButton(emoji: "😍", label: "Loved it", value: 1, current: current)
+                ratingButton(emoji: "🙂", label: "It was OK", value: 0, current: current)
+                ratingButton(emoji: "😕", label: "Not for me", value: -1, current: current)
+            }
+        }
+        .padding(.top, 18)
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private func ratingButton(emoji: String, label: String, value: Int, current: Int?) -> some View {
+        let selected = current == value
+        return Button {
+            store.setRating(cocktail.id, value)
+        } label: {
+            VStack(spacing: 4) {
+                Text(emoji).font(.system(size: 26))
+                Text(label).font(.system(size: 12, weight: .bold))
+                    .foregroundStyle(selected ? .white : Theme.plum)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 12)
+            .background(selected ? Theme.coral : Color.white, in: RoundedRectangle(cornerRadius: 16))
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(Theme.coral.opacity(0.4), lineWidth: selected ? 0 : 1)
+            )
         }
     }
 

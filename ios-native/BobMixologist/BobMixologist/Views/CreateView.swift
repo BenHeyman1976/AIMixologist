@@ -54,7 +54,7 @@ struct CreateView: View {
                 if genLoading && recipe == nil {
                     VStack(spacing: 12) {
                         ProgressView().controlSize(.large).tint(Theme.coral)
-                        Text("Bob is shaking things up…")
+                        Text("Siply is shaking things up…")
                             .font(.system(size: 18, weight: .heavy)).foregroundStyle(Theme.plum)
                     }
                     .frame(maxWidth: .infinity).padding(.vertical, 36)

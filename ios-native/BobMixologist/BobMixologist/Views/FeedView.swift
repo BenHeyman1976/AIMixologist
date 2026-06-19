@@ -36,7 +36,7 @@ struct FeedView: View {
 
     private var header: some View {
         HStack {
-            Text("🍹 Bob").font(.system(size: 20, weight: .black)).foregroundStyle(.white)
+            Text("Siply").font(.system(size: 22, weight: .black)).foregroundStyle(.white)
             Spacer()
             HStack(spacing: 16) {
                 ForEach(FeedSort.allCases, id: \.self) { s in

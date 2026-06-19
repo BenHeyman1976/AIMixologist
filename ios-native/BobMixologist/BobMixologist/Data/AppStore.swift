@@ -96,7 +96,7 @@ final class AppStore: ObservableObject {
         let name = tropical ? "Sunset Mango Breeze"
                  : festive ? "Spiced Cranberry Glow"
                  : wellness ? "Calm Coast Spritz"
-                 : "Bob's House Spritz"
+                 : "Siply House Spritz"
 
         let baseSpirit = alcoholFree ? "100ml premium alcohol-free aperitif"
                        : lowAlcohol ? "50ml chilled sparkling wine"
@@ -190,4 +190,20 @@ final class AppStore: ObservableObject {
         comments.append(c)
         return c
     }
+
+    // MARK: - "Did you like it?" tried-it feedback
+    // cocktailId -> 1 loved it · 0 it was ok · -1 not for me
+    @Published var ratings: [String: Int] = [:]
+
+    func setRating(_ cocktailId: String, _ value: Int) {
+        // A "loved it" also counts as a community vote if not already voted.
+        if value == 1, let i = cocktails.firstIndex(where: { $0.id == cocktailId }),
+           !(cocktails[i].voted) {
+            cocktails[i].voted = true
+            cocktails[i].voteCount += 1
+        }
+        ratings[cocktailId] = value
+    }
+
+    func rating(for cocktailId: String) -> Int? { ratings[cocktailId] }
 }

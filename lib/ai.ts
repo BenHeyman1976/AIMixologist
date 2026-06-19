@@ -175,19 +175,23 @@ async function generateImageOpenAI(
   prompt: string
 ): Promise<GeneratedImage> {
   const client = getOpenAI();
-  // Premium lifestyle marketing brief. Brand names are treated as visual
-  // inspiration only — never as an official partnership (see compliance).
-  const imagePrompt = `Premium lifestyle marketing photograph of a cocktail named "${recipeName}".
-Concept: ${prompt}.
-Styling: beautifully garnished cocktail in elegant glassware, warm golden-hour light,
-shallow depth of field, tasteful bar or summer setting, condensation on the glass,
-editorial food-photography quality, vibrant warm colours. No text, no logos,
-no brand trademarks, no claim of brand partnership.`;
+  // Fixed "Siply" house style — keeps every feed image consistent and premium.
+  // Brand names from the prompt are visual inspiration only, never an official
+  // partnership, and we explicitly forbid logos/labels/text (see compliance).
+  const STYLE =
+    "Editorial, premium social-media cocktail photography in the 'Siply' house style: " +
+    "a single beautifully garnished cocktail in elegant glassware as the hero, " +
+    "soft natural window light, light marble or pale stone surface, delicate blush, " +
+    "rose, peach and gold tones, subtle florals and fresh citrus props, condensation on " +
+    "the glass, shallow depth of field, clean negative space, chic and aspirational, " +
+    "vertical 4:5 composition. No people. No text, no logos, no brand labels, no " +
+    "trademarks, no packaging — generic glassware and bottles only.";
+  const imagePrompt = `${STYLE}\n\nCocktail: "${recipeName}". Concept: ${prompt}.`;
 
   const result = await client.images.generate({
     model: IMAGE_MODEL,
     prompt: imagePrompt,
-    size: "1024x1024",
+    size: "1024x1536", // portrait, matches the feed
     n: 1,
   });
 
