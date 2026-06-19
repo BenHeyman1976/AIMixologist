@@ -9,6 +9,15 @@ struct RecipeSheetView: View {
     private var notes: [String] { Compliance.notes(for: cocktail.recipe) }
     private var shoppable: [String] { cocktail.recipe.ingredients.filter(Affiliates.isShoppable) }
 
+    /// Shareable shopping list — perfect to send to whoever's on delivery duty
+    /// or to drop into a grocery app's order notes.
+    private var shoppingListText: String {
+        var s = "🍸 \(cocktail.name) — shopping list\n\n"
+        for ing in cocktail.recipe.ingredients { s += "• \(ing)\n" }
+        s += "\nServe in: \(cocktail.recipe.glassware)\n\nMade with Bob the AI Mixologist 🍹\nPlease drink responsibly. 18+."
+        return s
+    }
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -27,18 +36,25 @@ struct RecipeSheetView: View {
                     Text("@\(cocktail.creatorUsername) · \(cocktail.recipe.occasion)")
                         .font(.subheadline).foregroundStyle(Theme.ink.opacity(0.6))
 
-                    // Big, glanceable recipe to show staff in a busy/noisy venue.
-                    Button { showBarman = true } label: {
-                        HStack {
-                            Image(systemName: "megaphone.fill")
-                            Text("Tell the barman")
-                            Spacer()
-                            Image(systemName: "chevron.right")
+                    // Night out: show staff the recipe big. Night in: share the
+                    // shopping list (delivery app, WhatsApp the host, etc.).
+                    HStack(spacing: 10) {
+                        Button { showBarman = true } label: {
+                            Label("Tell the barman", systemImage: "megaphone.fill")
+                                .font(.system(size: 16, weight: .heavy))
+                                .foregroundStyle(.white)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 14)
+                                .background(Theme.plum, in: Capsule())
                         }
-                        .font(.system(size: 17, weight: .heavy))
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 18).padding(.vertical, 14)
-                        .background(Theme.plum, in: Capsule())
+                        ShareLink(item: shoppingListText) {
+                            Label("Share list", systemImage: "square.and.arrow.up")
+                                .font(.system(size: 16, weight: .heavy))
+                                .foregroundStyle(.white)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 14)
+                                .background(Theme.coral, in: Capsule())
+                        }
                     }
                     .padding(.top, 16)
 
