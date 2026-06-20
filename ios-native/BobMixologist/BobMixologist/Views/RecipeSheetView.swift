@@ -6,6 +6,7 @@ struct RecipeSheetView: View {
     @EnvironmentObject private var store: AppStore
     @Environment(\.dismiss) private var dismiss
     @State private var showBarman = false
+    @State private var tipSent: Int?
 
     private var notes: [String] { Compliance.notes(for: cocktail.recipe) }
     private var shoppable: [String] { cocktail.recipe.ingredients.filter(Affiliates.isShoppable) }
@@ -139,6 +140,31 @@ struct RecipeSheetView: View {
                 ratingButton(emoji: "😍", label: "Loved it", value: 1, current: current)
                 ratingButton(emoji: "🙂", label: "It was OK", value: 0, current: current)
                 ratingButton(emoji: "😕", label: "Not for me", value: -1, current: current)
+            }
+
+            // Tip jar — appears once they've loved a drink. Monetisation hook.
+            // TODO(billing): real tipping via Apple In-App Purchase / Stripe.
+            // Note Apple's rules: digital tips generally must go through IAP.
+            if current == 1 {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Loved it? Leave @\(cocktail.creatorUsername) a tip 💛")
+                        .font(.system(size: 15, weight: .bold)).foregroundStyle(Theme.plum)
+                    HStack(spacing: 10) {
+                        ForEach([1, 2, 5], id: \.self) { amount in
+                            Button { tipSent = amount } label: {
+                                Text("£\(amount)")
+                                    .font(.system(size: 15, weight: .heavy)).foregroundStyle(Theme.plum)
+                                    .frame(maxWidth: .infinity).padding(.vertical, 10)
+                                    .background(Theme.peach.opacity(0.4), in: Capsule())
+                            }
+                        }
+                    }
+                    if let tipSent {
+                        Text("Thank you! 💛 In-app tipping is coming soon (you chose £\(tipSent)).")
+                            .font(.footnote).foregroundStyle(Theme.ink.opacity(0.6))
+                    }
+                }
+                .padding(.top, 8)
             }
         }
         .padding(.top, 18)

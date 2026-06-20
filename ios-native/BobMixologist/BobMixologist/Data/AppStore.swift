@@ -30,6 +30,21 @@ final class AppStore: ObservableObject {
 
     private var backend: BackendAPI { BackendAPI(baseURL: apiBaseURL) }
 
+    /// Pings the backend so Settings can show a green/red status.
+    func testConnection() async -> (ok: Bool, message: String) {
+        guard !apiBaseURL.isEmpty else { return (false, "Enter a backend URL first.") }
+        do {
+            let h = try await backend.checkHealth()
+            if h.aiReady { return (true, "Connected — real AI is ON ✨") }
+            if h.mode == "openai" {
+                return (true, "Connected, but no API key found on the server.")
+            }
+            return (true, "Connected — backend is in demo mode (set AI_MODE=openai).")
+        } catch {
+            return (false, "Couldn't reach the backend. Check the URL and that it's running.")
+        }
+    }
+
     // Session
     @Published var user: SessionUser?
 

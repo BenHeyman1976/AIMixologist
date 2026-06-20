@@ -5,6 +5,8 @@ import SwiftUI
 struct SettingsView: View {
     @EnvironmentObject var store: AppStore
     @Environment(\.dismiss) private var dismiss
+    @State private var testing = false
+    @State private var testResult: (ok: Bool, message: String)?
 
     var body: some View {
         NavigationStack {
@@ -17,6 +19,28 @@ struct SettingsView: View {
                         .autocorrectionDisabled()
                         .keyboardType(.URL)
                         .disabled(!store.useRemote)
+
+                    Button {
+                        testing = true
+                        testResult = nil
+                        Task {
+                            testResult = await store.testConnection()
+                            testing = false
+                        }
+                    } label: {
+                        HStack {
+                            Text("Test connection")
+                            Spacer()
+                            if testing { ProgressView() }
+                        }
+                    }
+                    .disabled(!store.useRemote || testing)
+
+                    if let result = testResult {
+                        Label(result.message, systemImage: result.ok ? "checkmark.circle.fill" : "xmark.circle.fill")
+                            .font(.footnote)
+                            .foregroundStyle(result.ok ? .green : .red)
+                    }
                 } header: {
                     Text("AI backend")
                 } footer: {
@@ -33,7 +57,7 @@ struct SettingsView: View {
                 }
 
                 Section {
-                    Text("Siply — Your Cocktail Companion")
+                    Text("Siply — Your Cocktail Concierge")
                         .font(.footnote).foregroundStyle(.secondary)
                     Text("Please drink responsibly. 18+.")
                         .font(.footnote).foregroundStyle(.secondary)

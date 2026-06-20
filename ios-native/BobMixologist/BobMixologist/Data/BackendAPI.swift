@@ -106,6 +106,18 @@ struct BackendAPI {
                          safety: dto.safety)
     }
 
+    struct Health { let ok: Bool; let mode: String; let aiReady: Bool }
+    private struct HealthDTO: Decodable { let ok: Bool; let mode: String?; let aiReady: Bool? }
+
+    func checkHealth() async throws -> Health {
+        guard let url = URL(string: "\(baseURL)/api/health") else { throw BackendError.badURL }
+        var req = URLRequest(url: url)
+        req.timeoutInterval = 8
+        let (data, _) = try await URLSession.shared.data(for: req)
+        let dto = try JSONDecoder().decode(HealthDTO.self, from: data)
+        return Health(ok: dto.ok, mode: dto.mode ?? "mock", aiReady: dto.aiReady ?? false)
+    }
+
     func fetchFeed(sort: FeedSort) async throws -> [Cocktail] {
         let sortParam = sort == .mostVoted ? "most_voted" : sort.rawValue
         guard let url = URL(string: "\(baseURL)/api/feed?sort=\(sortParam)") else {
