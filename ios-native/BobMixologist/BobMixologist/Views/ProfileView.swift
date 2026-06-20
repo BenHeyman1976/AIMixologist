@@ -3,6 +3,7 @@ import SwiftUI
 struct ProfileView: View {
     @EnvironmentObject var store: AppStore
     @State private var showSettings = false
+    @State private var showPaywall = false
 
     private let cols = [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)]
 
@@ -49,11 +50,19 @@ struct ProfileView: View {
                     .frame(height: 12)
                     Text("\(store.imageUsage.remaining) image generations left this month. Recipes are always unlimited.")
                         .font(.footnote).foregroundStyle(Theme.ink.opacity(0.6))
-                    // TODO(billing): "Upgrade" → paid plan raises this allowance.
-                    Text("Upgrade for more images (coming soon)")
-                        .font(.system(size: 14, weight: .bold)).foregroundStyle(Theme.ink.opacity(0.5))
-                        .frame(maxWidth: .infinity).padding(.vertical, 12)
-                        .background(Color.black.opacity(0.05), in: Capsule())
+                    if store.isPremium {
+                        Label("Siply+ member — unlimited images 💛", systemImage: "checkmark.seal.fill")
+                            .font(.system(size: 14, weight: .heavy)).foregroundStyle(Theme.coral)
+                            .frame(maxWidth: .infinity).padding(.vertical, 12)
+                            .background(Theme.peach.opacity(0.3), in: Capsule())
+                    } else {
+                        Button { showPaywall = true } label: {
+                            Label("Upgrade to Siply+", systemImage: "sparkles")
+                                .font(.system(size: 15, weight: .heavy)).foregroundStyle(.white)
+                                .frame(maxWidth: .infinity).padding(.vertical, 13)
+                                .background(Theme.warmGradient, in: Capsule())
+                        }
+                    }
                 }
                 .padding(18)
                 .background(.white, in: RoundedRectangle(cornerRadius: 28))
@@ -75,6 +84,7 @@ struct ProfileView: View {
         }
         .background(Theme.cream)
         .sheet(isPresented: $showSettings) { SettingsView() }
+        .sheet(isPresented: $showPaywall) { PaywallView() }
     }
 
     private var published: [Cocktail] { store.myCocktails.filter { $0.isPublic } }

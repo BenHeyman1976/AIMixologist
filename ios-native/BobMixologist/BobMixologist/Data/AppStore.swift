@@ -72,6 +72,28 @@ final class AppStore: ObservableObject {
         user = SessionUser(id: "me", username: "guest", plan: "free")
     }
 
+    // MARK: - Siply+ premium
+    // TODO(billing): replace with StoreKit 2 (Apple In-App Purchase) — load
+    // products, purchase, verify the transaction, and restore. For now these
+    // flip local state so the premium experience is fully testable.
+    var isPremium: Bool { user?.plan == "paid" }
+    static let freeMonthlyImages = 3
+    static let premiumMonthlyImages = 100  // effectively unlimited for the demo
+
+    func upgradeToPremium() {
+        user?.plan = "paid"
+        imageUsage.limit = Self.premiumMonthlyImages
+    }
+
+    func restoreOrManage() {
+        // TODO(billing): StoreKit restore. No-op stub for now.
+    }
+
+    func downgradeToFree() {  // testing helper
+        user?.plan = "free"
+        imageUsage.limit = Self.freeMonthlyImages
+    }
+
     func logout() { user = nil }
 
     // MARK: - Feed
