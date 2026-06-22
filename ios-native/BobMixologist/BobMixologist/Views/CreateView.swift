@@ -11,7 +11,7 @@ struct CreateView: View {
     @State private var published = false
     @State private var genLoading = false
     @State private var imgLoading = false
-    @State private var showPaywall = false
+    @State private var showLimitNote = false
 
     private let examples = [
         "Aperol + Trip CBD summer spritz",
@@ -66,7 +66,11 @@ struct CreateView: View {
             .padding(.top, 8)
         }
         .background(Theme.cream)
-        .sheet(isPresented: $showPaywall) { PaywallView() }
+        .alert("That's your images for this month 📸", isPresented: $showLimitNote) {
+            Button("Got it", role: .cancel) {}
+        } message: {
+            Text("You've used all \(AppStore.freeMonthlyImages) free AI images this month — they reset on the 1st. Recipes and night plans are still unlimited, so keep creating!")
+        }
     }
 
     @ViewBuilder
@@ -148,7 +152,7 @@ struct CreateView: View {
         Task {
             switch await store.generateImage(name: recipe.name) {
             case .success(let url): imageURL = url
-            case .limitReached: showPaywall = true   // out of free images → Siply+
+            case .limitReached: showLimitNote = true   // out of free images this month
             }
             imgLoading = false
         }

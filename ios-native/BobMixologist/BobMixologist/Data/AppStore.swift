@@ -49,9 +49,12 @@ final class AppStore: ObservableObject {
     @Published var user: SessionUser?
 
     // Data
+    // Free monthly AI-image allowance (recipes & plans are always unlimited).
+    // Image generation has a real cost, so we simply cap it per user per month.
+    static let freeMonthlyImages = 5
     @Published private(set) var cocktails: [Cocktail] = MockData.seedCocktails()
     @Published private(set) var comments: [Comment] = MockData.seedComments()
-    @Published private(set) var imageUsage = ImageUsage(used: 0, limit: 3)
+    @Published private(set) var imageUsage = ImageUsage(used: 0, limit: AppStore.freeMonthlyImages)
 
     // MARK: - Auth (mock)
     // TODO(auth): replace with Supabase Google/Apple OAuth + email magic links.
@@ -70,28 +73,6 @@ final class AppStore: ObservableObject {
     /// Enter without a provider — a guaranteed path into the app.
     func continueAsGuest() {
         user = SessionUser(id: "me", username: "guest", plan: "free")
-    }
-
-    // MARK: - Siply+ premium
-    // TODO(billing): replace with StoreKit 2 (Apple In-App Purchase) — load
-    // products, purchase, verify the transaction, and restore. For now these
-    // flip local state so the premium experience is fully testable.
-    var isPremium: Bool { user?.plan == "paid" }
-    static let freeMonthlyImages = 3
-    static let premiumMonthlyImages = 100  // effectively unlimited for the demo
-
-    func upgradeToPremium() {
-        user?.plan = "paid"
-        imageUsage.limit = Self.premiumMonthlyImages
-    }
-
-    func restoreOrManage() {
-        // TODO(billing): StoreKit restore. No-op stub for now.
-    }
-
-    func downgradeToFree() {  // testing helper
-        user?.plan = "free"
-        imageUsage.limit = Self.freeMonthlyImages
     }
 
     func logout() { user = nil }

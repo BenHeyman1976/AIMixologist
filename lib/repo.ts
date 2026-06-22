@@ -20,7 +20,7 @@ import type {
 } from "./types";
 
 const FREE_PLAN_MONTHLY_IMAGES = Number(
-  process.env.FREE_PLAN_MONTHLY_IMAGES ?? 3
+  process.env.FREE_PLAN_MONTHLY_IMAGES ?? 5
 );
 
 function currentPeriod(): string {
