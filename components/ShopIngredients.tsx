@@ -41,8 +41,9 @@ export default function ShopIngredients({
           </div>
         ))}
         <p className="pt-1 text-xs text-cocktail-ink/50">
-          We may earn a small commission from these links, at no extra cost to
-          you. Please drink responsibly.
+          As an Amazon Associate we earn from qualifying purchases. We may earn a
+          small commission from these links, at no extra cost to you. Please drink
+          responsibly.
         </p>
       </div>
     </details>

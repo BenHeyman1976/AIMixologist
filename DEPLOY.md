@@ -40,7 +40,7 @@ Redeploy — it switches from in-memory to Supabase automatically.
 ## 4. Start earning 💰
 - **Affiliate:** join **Amazon Associates** (UK), then add your tag:
   ```
-  AMAZON_AFFILIATE_TAG = yourtag-21
+  NEXT_PUBLIC_AMAZON_AFFILIATE_TAG = yourtag-21
   ```
   The "Shop the ingredients" links now earn commission. Later: join **Awin** for
   Tesco/Ocado tracked links.

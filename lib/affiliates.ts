@@ -47,7 +47,9 @@ export function ingredientToSearchTerm(ingredient: string): string {
 /** Builds affiliate/search links for the major retailers for one ingredient. */
 export function retailerLinks(ingredient: string): Retailer[] {
   const q = encodeURIComponent(ingredientToSearchTerm(ingredient));
-  const amazonTag = process.env.AMAZON_AFFILIATE_TAG;
+  // Public var so the tag also applies on client-rendered pages (the create
+  // page). Affiliate tags are public in the link anyway, so this is safe.
+  const amazonTag = process.env.NEXT_PUBLIC_AMAZON_AFFILIATE_TAG;
 
   const amazon = `https://www.amazon.co.uk/s?k=${q}${
     amazonTag ? `&tag=${encodeURIComponent(amazonTag)}` : ""
