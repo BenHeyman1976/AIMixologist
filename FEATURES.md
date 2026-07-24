@@ -148,12 +148,11 @@ Ordered by **impact on the core loop** (Create → View → Remix → Share → 
 and effort. We confirm/descope before each.
 
 **Now — finish core creation (quick wins, high polish)**
-1. Enrich recipe output: **short description, ABV, calories, prep time, food
-   pairing, substitutions, allergens** (one prompt+schema change; big quality jump). ← IN PROGRESS
-2. **AI transparency + high-ABV safety notes** (§18) — cheap, protective.
+1. ✅ Enrich recipe output (description, ABV, calories, prep, pairing, subs, allergens).
+2. ✅ AI transparency + safety notes (raw egg, flame, high-ABV, allergens).
 
 **Next — the viral loop (biggest growth lever)**
-3. **Remix Engine**: one-tap remixes + attribution/lineage (§3.1–3.2).
+3. **Remix Engine**: one-tap remixes + attribution/lineage (§3.1–3.2). ← NEXT
 4. **Cocktail DNA**: flavour fingerprint + simple chart (§4) — powers remix & discovery.
 5. **Remix comparison** (§3.3).
 6. **Creator profiles + follow** (§11.4, §11.2).
