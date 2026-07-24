@@ -1,4 +1,4 @@
-// Shared domain types for Bob the AI Mixologist.
+// Shared domain types for Siply — Your Cocktail Concierge.
 
 export type AlcoholLevel = "alcohol-free" | "low-alcohol" | "full-strength";
 

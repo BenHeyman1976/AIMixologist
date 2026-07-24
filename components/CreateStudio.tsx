@@ -231,7 +231,7 @@ export default function CreateStudio({
         <div className="card flex flex-col items-center justify-center gap-3 p-12 text-center">
           <span className="text-5xl animate-bounce">🍹</span>
           <p className="font-display text-xl font-bold text-cocktail-plum">
-            Bob is shaking things up…
+            Siply is shaking things up…
           </p>
           <p className="text-sm text-cocktail-ink/60">Crafting your recipe</p>
         </div>

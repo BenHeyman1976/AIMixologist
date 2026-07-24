@@ -44,7 +44,7 @@ export default function LoginForm() {
         <div className="text-center">
           <div className="text-5xl">🍹</div>
           <h1 className="mt-3 font-display text-3xl font-bold text-cocktail-plum">
-            Welcome to Bob
+            Welcome to Siply
           </h1>
           <p className="mt-1 text-cocktail-ink/70">
             Sign in to create, save and share your cocktails.

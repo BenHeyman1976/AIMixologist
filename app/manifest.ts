@@ -1,11 +1,11 @@
 import type { MetadataRoute } from "next";
 
-// Web App Manifest — makes Bob installable to the home screen as a PWA.
+// Web App Manifest — makes Siply installable to the home screen as a PWA.
 // On iPhone: open the site in Safari → Share → "Add to Home Screen".
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Bob the AI Mixologist",
-    short_name: "Bob",
+    name: "Siply — Your Cocktail Concierge",
+    short_name: "Siply",
     description:
       "Turn any idea into a stunning cocktail recipe and image, then share it with the community.",
     start_url: "/",

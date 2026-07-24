@@ -126,7 +126,7 @@ function generateRecipeMock(prompt: string, units: UnitSystem = "ml"): Generated
   const festive = p.includes("christmas") || p.includes("festive") || p.includes("winter");
   const wellness = p.includes("cbd") || p.includes("trip") || p.includes("relax");
 
-  let name = "Bob's House Spritz";
+  let name = "Siply House Spritz";
   if (tropical) name = "Sunset Mango Breeze";
   else if (festive) name = "Spiced Cranberry Glow";
   else if (wellness) name = "Calm Coast Spritz";
