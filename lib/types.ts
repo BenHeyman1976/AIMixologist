@@ -4,8 +4,19 @@ export type AlcoholLevel = "alcohol-free" | "low-alcohol" | "full-strength";
 
 export type ModerationStatus = "pending" | "approved" | "rejected";
 
+/** Enriched, optional recipe detail (added incrementally; safe if absent). */
+export interface RecipeMeta {
+  description?: string; // one-line hook
+  abv?: string; // e.g. "~12% ABV"
+  calories?: string; // e.g. "~180 kcal"
+  prep_time?: string; // e.g. "3 min"
+  food_pairing?: string;
+  substitutions?: string[];
+  allergens?: string[];
+}
+
 /** The structured recipe shape returned by the AI recipe generator. */
-export interface GeneratedRecipe {
+export interface GeneratedRecipe extends RecipeMeta {
   name: string;
   ingredients: string[];
   method: string[];
@@ -18,7 +29,7 @@ export interface GeneratedRecipe {
 }
 
 /** A cocktail row as stored / returned by the API. */
-export interface Cocktail {
+export interface Cocktail extends RecipeMeta {
   id: string;
   user_id: string;
   name: string;

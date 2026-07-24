@@ -16,8 +16,37 @@ import type {
   GallerySort,
   GeneratedRecipe,
   ImageUsage,
+  RecipeMeta,
   SponsoredBrand,
 } from "./types";
+
+// Enriched recipe fields are stored in a single `meta` jsonb column so we can
+// add more over time without new migrations. These helpers flatten it in/out.
+const META_KEYS: (keyof RecipeMeta)[] = [
+  "description",
+  "abv",
+  "calories",
+  "prep_time",
+  "food_pairing",
+  "substitutions",
+  "allergens",
+];
+
+function extractMeta(source: RecipeMeta): RecipeMeta {
+  const meta: RecipeMeta = {};
+  for (const k of META_KEYS) {
+    const v = (source as any)[k];
+    if (v !== undefined && v !== null) (meta as any)[k] = v;
+  }
+  return meta;
+}
+
+/** Maps a Supabase row (with a `meta` jsonb) to a flat Cocktail. */
+function flattenRow(row: any): Cocktail {
+  if (!row) return row;
+  const { meta, ...rest } = row;
+  return { ...(rest as Cocktail), ...((meta as RecipeMeta) ?? {}) };
+}
 
 const FREE_PLAN_MONTHLY_IMAGES = Number(
   process.env.FREE_PLAN_MONTHLY_IMAGES ?? 5
@@ -41,6 +70,7 @@ export interface SaveCocktailInput {
 export async function saveCocktail(
   input: SaveCocktailInput
 ): Promise<Cocktail> {
+  const meta = extractMeta(input.recipe);
   const row: Cocktail = {
     id: randomUUID(),
     user_id: input.userId,
@@ -61,18 +91,23 @@ export async function saveCocktail(
     vote_count: 0,
     created_at: new Date().toISOString(),
     creator_username: input.username,
+    ...meta, // flat enriched fields (for the in-memory store + return value)
   };
 
   const supabase = getServiceSupabase();
   if (isSupabaseConfigured && supabase) {
-    const { creator_username, ...insert } = row;
+    // Build the DB row explicitly: real columns + the meta jsonb (not the flat
+    // enriched fields, which aren't columns).
+    const { creator_username, ...flat } = row;
+    for (const k of META_KEYS) delete (flat as any)[k];
+    const insert = { ...flat, meta };
     const { data, error } = await supabase
       .from("cocktails")
       .insert(insert)
       .select()
       .single();
     if (error) throw new Error(error.message);
-    return { ...(data as Cocktail), creator_username };
+    return { ...flattenRow(data), creator_username };
   }
 
   db().cocktails.unshift(row);
@@ -94,7 +129,7 @@ export async function updateCocktail(
       .select()
       .single();
     if (error) throw new Error(error.message);
-    return data as Cocktail;
+    return flattenRow(data);
   }
 
   const c = db().cocktails.find((x) => x.id === id && x.user_id === userId);
@@ -112,7 +147,7 @@ export async function getCocktail(id: string): Promise<Cocktail | null> {
       .eq("id", id)
       .maybeSingle();
     if (error) throw new Error(error.message);
-    return (data as Cocktail) ?? null;
+    return data ? flattenRow(data) : null;
   }
   return db().cocktails.find((x) => x.id === id) ?? null;
 }
@@ -145,7 +180,7 @@ export async function listPublicCocktails(
 
     const { data, error } = await q.limit(60);
     if (error) throw new Error(error.message);
-    let rows = (data as Cocktail[]) ?? [];
+    let rows = ((data as any[]) ?? []).map(flattenRow);
     if (filters.sort === "trending") rows = sortTrending(rows);
     return rows;
   }
@@ -206,7 +241,7 @@ export async function listUserCocktails(userId: string): Promise<{
       .eq("user_id", userId)
       .order("created_at", { ascending: false });
     if (error) throw new Error(error.message);
-    rows = (data as Cocktail[]) ?? [];
+    rows = ((data as any[]) ?? []).map(flattenRow);
   } else {
     rows = db().cocktails.filter((c) => c.user_id === userId);
   }

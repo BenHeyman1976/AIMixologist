@@ -71,8 +71,17 @@ juices, syrups, fruit). Do NOT list glassware, "a glass", ice, or the garnish as
 ingredients — glassware and garnish have their own fields.
 
 Respond with ONLY valid minified JSON matching exactly this shape:
-{"name":"","ingredients":[],"method":[],"garnish":"","glassware":"","tasting_notes":"","occasion":"","alcohol_level":"","tags":[]}
-Where "alcohol_level" is one of: "alcohol-free", "low-alcohol", "full-strength".`;
+{"name":"","description":"","ingredients":[],"method":[],"garnish":"","glassware":"","tasting_notes":"","occasion":"","alcohol_level":"","abv":"","calories":"","prep_time":"","food_pairing":"","substitutions":[],"allergens":[],"tags":[]}
+Where:
+- "alcohol_level" is one of: "alcohol-free", "low-alcohol", "full-strength".
+- "description" is a single enticing sentence.
+- "abv" is an estimate like "~12% ABV" (use "0% ABV" for alcohol-free).
+- "calories" is a rough estimate per serving like "~180 kcal".
+- "prep_time" is like "3 min".
+- "food_pairing" is a short suggestion.
+- "substitutions" are 1–3 easy swaps (e.g. "no gin? use vodka").
+- "allergens" lists notable allergens present (e.g. "egg", "dairy", "nuts") or [] if none.
+Estimates are approximate and clearly not lab-measured.`;
 
 // ── Recipe generation ────────────────────────────────────────
 
@@ -187,6 +196,20 @@ function generateRecipeMock(prompt: string, units: UnitSystem = "ml"): Generated
     occasion: tropical ? "Summer BBQ" : festive ? "Holiday gathering" : "Relaxed evening",
     alcohol_level,
     tags,
+    description: tropical
+      ? "A juicy, sun-soaked sipper built for warm afternoons."
+      : festive
+      ? "A cosy, spiced glass of festive cheer."
+      : "A crisp, easy-going house spritz for any evening.",
+    abv: alcohol_level === "alcohol-free" ? "0% ABV" : alcohol_level === "low-alcohol" ? "~6% ABV" : "~12% ABV",
+    calories: "~160 kcal",
+    prep_time: "3 min",
+    food_pairing: tropical ? "Grilled prawns or a fresh ceviche" : festive ? "Spiced nuts or a cheese board" : "Olives and salted crisps",
+    substitutions: [
+      alcoholFree ? "Add gin to make it full-strength" : "No gin? Use vodka",
+      "Swap soda for tonic for more bite",
+    ],
+    allergens: [],
   };
 }
 
@@ -194,6 +217,7 @@ function generateRecipeMock(prompt: string, units: UnitSystem = "ml"): Generated
 function coerceRecipe(parsed: any, prompt: string): GeneratedRecipe {
   const arr = (v: any): string[] =>
     Array.isArray(v) ? v.map((x) => String(x)) : v ? [String(v)] : [];
+  const str = (v: any): string | undefined => (v ? String(v) : undefined);
   return {
     name: String(parsed.name || "Untitled Cocktail"),
     ingredients: arr(parsed.ingredients),
@@ -204,6 +228,13 @@ function coerceRecipe(parsed: any, prompt: string): GeneratedRecipe {
     occasion: String(parsed.occasion || ""),
     alcohol_level: normaliseAlcoholLevel(String(parsed.alcohol_level || "")),
     tags: arr(parsed.tags),
+    description: str(parsed.description),
+    abv: str(parsed.abv),
+    calories: str(parsed.calories),
+    prep_time: str(parsed.prep_time),
+    food_pairing: str(parsed.food_pairing),
+    substitutions: parsed.substitutions ? arr(parsed.substitutions) : undefined,
+    allergens: parsed.allergens ? arr(parsed.allergens) : undefined,
   };
 }
 

@@ -49,6 +49,7 @@ create table if not exists public.cocktails (
   occasion text,
   alcohol_level alcohol_level not null default 'full-strength',
   tags text[] not null default '{}',
+  meta jsonb not null default '{}',   -- enriched fields: abv, calories, prep_time, etc.
   image_url text,
   is_public boolean not null default false,
   is_flagged boolean not null default false,

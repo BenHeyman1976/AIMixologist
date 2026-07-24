@@ -17,12 +17,44 @@ export default function RecipeDetails({
     | "tasting_notes"
     | "occasion"
     | "tags"
+    | "description"
+    | "abv"
+    | "calories"
+    | "prep_time"
+    | "food_pairing"
+    | "substitutions"
+    | "allergens"
   >;
   compliance?: string[];
   units?: UnitSystem;
 }) {
+  const stats = [
+    recipe.abv && { label: "ABV", value: recipe.abv },
+    recipe.calories && { label: "Calories", value: recipe.calories },
+    recipe.prep_time && { label: "Prep time", value: recipe.prep_time },
+  ].filter(Boolean) as { label: string; value: string }[];
+
   return (
     <div className="space-y-6">
+      {recipe.description && (
+        <p className="text-cocktail-ink/80">{recipe.description}</p>
+      )}
+
+      {stats.length > 0 && (
+        <div className="flex flex-wrap gap-3">
+          {stats.map((s) => (
+            <div
+              key={s.label}
+              className="rounded-2xl bg-cocktail-peach/20 px-4 py-2 text-center"
+            >
+              <div className="text-xs font-semibold uppercase tracking-wide text-cocktail-plum/60">
+                {s.label}
+              </div>
+              <div className="font-bold text-cocktail-plum">{s.value}</div>
+            </div>
+          ))}
+        </div>
+      )}
       <div className="grid gap-6 sm:grid-cols-2">
         <div>
           <h3 className="font-display text-lg font-bold text-cocktail-plum">
@@ -66,6 +98,36 @@ export default function RecipeDetails({
         </h3>
         <p className="mt-1 italic text-cocktail-ink/80">{recipe.tasting_notes}</p>
       </div>
+
+      {recipe.food_pairing && (
+        <p className="text-cocktail-ink/80">
+          <span className="font-semibold text-cocktail-plum">🍽️ Pairs with:</span>{" "}
+          {recipe.food_pairing}
+        </p>
+      )}
+
+      {recipe.substitutions && recipe.substitutions.length > 0 && (
+        <div>
+          <h3 className="font-display text-lg font-bold text-cocktail-plum">
+            Easy swaps
+          </h3>
+          <ul className="mt-2 space-y-1 text-cocktail-ink/85">
+            {recipe.substitutions.map((s, i) => (
+              <li key={i} className="flex gap-2">
+                <span className="text-cocktail-coral">↔</span>
+                <span>{s}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {recipe.allergens && recipe.allergens.length > 0 && (
+        <p className="text-sm text-cocktail-plum">
+          <span className="font-semibold">Allergens:</span>{" "}
+          {recipe.allergens.join(", ")}
+        </p>
+      )}
 
       {recipe.tags?.length > 0 && (
         <div className="flex flex-wrap gap-2">

@@ -13,22 +13,18 @@ through. Update the status as features land.
 
 ---
 
-## ⚠️ Contradictions with what we previously agreed — NEED YOUR CALL
+## ✅ Decisions (resolved with Ben)
 
-1. **Subscriptions / premium tier (spec §13, Phase 6).** We explicitly **removed
-   the paywall** and agreed: *"no one pays a subscription for a fun night-out app;
-   revenue = sponsors + affiliates + tips."* The spec re-introduces a full
-   free/premium subscription model. **Keep it removed, or bring premium back?**
-2. **Positioning / audience.** We narrowed to *"fun night-out app aimed at
-   professional women"* (blush/rose brand). The spec is a **broad platform**
-   (corporate events, B2B venues, marketplace, F1 cocktails). Expanding scope is
-   fine (you asked to), but: **does the female-focused consumer brand stay as the
-   face while the platform broadens underneath?**
-3. **Tagline.** We use *"Imagine. Create. Enjoy." / "Your cocktail concierge."*
-   The spec uses *"Imagine it. Remix it. Drink it."* Remix is now central —
-   **update the tagline to include Remix?**
-4. **Two front-ends.** Web (live) vs iOS (native). Building everything twice is
-   double the work. **Recommend: build web-first, port to iOS later. Agree?**
+1. **Subscriptions:** **on hold** — revisit depending on which other features we
+   build. Not removed permanently, not building now. (Revenue focus stays
+   sponsors + affiliates + tips.)
+2. **Positioning:** consumer face **gravitates toward women**, but with **broader
+   appeal** — deliberately serve **event planners and creators** too. Keep the
+   blush brand as the face; design features so planners/creators are welcome.
+3. **Tagline:** **keep ours** — "Imagine. Create. Enjoy." / "Your cocktail concierge."
+4. **Front-ends:** **web-first**, port to iOS later.
+5. **Bartender Mode is APP-ONLY** — people don't carry laptops on a night out.
+   Keep the iOS "Tell the Barman"; do **not** build it on web.
 
 ## Decisions already locked (kept unless you say otherwise)
 - Measures **ml by default** (British), with an oz toggle. ✅ matches spec.
@@ -78,12 +74,12 @@ through. Update the status as features land.
 | Flavour fingerprint + scales/chart | ⬜ | |
 | DNA-based actions (find similar, same DNA other spirit) | ⬜ | |
 
-### 5. Bartender Mode
-| Full-screen bartender view | 🟡 | **iOS: ✅** ("Tell the Barman"); **web: ⬜** |
-| Big text, high contrast, metric, exit | 🟡 | iOS done |
-| Actions (translate/simplify/substitute/edit) | ⬜ | |
-| Bar etiquette message | ⬜ | |
-| QR handoff | ⬜ | |
+### 5. Bartender Mode — **APP-ONLY** (not on web, by decision)
+| Full-screen bartender view | ✅ (iOS) | "Tell the Barman"; **web: not planned** |
+| Big text, high contrast, metric, exit | ✅ (iOS) | |
+| Actions (translate/simplify/substitute/edit) | ⬜ (iOS) | future iOS work |
+| Bar etiquette message | ⬜ (iOS) | |
+| QR handoff | ⬜ (iOS) | |
 | Bartender-approved badge (future) | ⬜ | |
 
 ### 6. Social Creator Pack
@@ -153,15 +149,16 @@ and effort. We confirm/descope before each.
 
 **Now — finish core creation (quick wins, high polish)**
 1. Enrich recipe output: **short description, ABV, calories, prep time, food
-   pairing, substitutions** (one prompt+schema change; big perceived quality jump).
-2. **AI transparency + allergen/high-ABV safety notes** (§18) — cheap, protective.
-3. **Web Bartender Mode** (port the iOS one) + bar etiquette message.
+   pairing, substitutions, allergens** (one prompt+schema change; big quality jump). ← IN PROGRESS
+2. **AI transparency + high-ABV safety notes** (§18) — cheap, protective.
 
 **Next — the viral loop (biggest growth lever)**
-4. **Remix Engine**: one-tap remixes + attribution/lineage (§3.1–3.2).
-5. **Cocktail DNA**: flavour fingerprint + simple chart (§4) — powers remix & discovery.
-6. **Remix comparison** (§3.3).
-7. **Creator profiles + follow** (§11.4, §11.2).
+3. **Remix Engine**: one-tap remixes + attribution/lineage (§3.1–3.2).
+4. **Cocktail DNA**: flavour fingerprint + simple chart (§4) — powers remix & discovery.
+5. **Remix comparison** (§3.3).
+6. **Creator profiles + follow** (§11.4, §11.2).
+
+(Web Bartender Mode removed — app-only.)
 
 **Then — utility & creator tools**
 8. **Collections** (save/favourite/organise) (§10).
