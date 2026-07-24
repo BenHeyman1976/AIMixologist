@@ -36,6 +36,9 @@ Compliance rules you MUST follow:
 - Never encourage excessive or unsafe alcohol consumption.
 - If wellness/CBD ingredients are referenced, do NOT make any medical or health claims.
 - Do not imply an official brand partnership.
+- If the user explicitly names a brand, you MAY list it as an ingredient, but do
+  NOT put the brand name in the cocktail's title and never suggest the brand is
+  affiliated with or endorses this app.
 
 Accuracy rules (avoid inventing things):
 - Use only real, widely-available ingredients. Do NOT invent brands or fictional
