@@ -3,7 +3,9 @@ import { notFound } from "next/navigation";
 import RecipeDetails from "@/components/RecipeDetails";
 import VoteButton from "@/components/VoteButton";
 import ShareButtons from "@/components/ShareButtons";
+import CreatorPack from "@/components/CreatorPack";
 import Comments from "@/components/Comments";
+import { cocktailUrl } from "@/lib/site";
 import {
   getCocktail,
   hasVoted,
@@ -102,6 +104,13 @@ export default async function CocktailDetailPage({
             url={`/cocktail/${cocktail.id}`}
             title={cocktail.name}
             text={cocktail.tasting_notes}
+          />
+
+          {/* Social Creator Pack — clean image download + auto caption/hashtags. */}
+          <CreatorPack
+            recipe={cocktail}
+            imageUrl={cocktail.image_url}
+            link={cocktailUrl(cocktail.id)}
           />
         </div>
       </article>

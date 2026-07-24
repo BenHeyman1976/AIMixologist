@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import RecipeDetails from "@/components/RecipeDetails";
 import ShareButtons from "@/components/ShareButtons";
+import CreatorPack from "@/components/CreatorPack";
 import MicButton from "@/components/MicButton";
 import type { Cocktail, GeneratedRecipe, ImageUsage } from "@/lib/types";
 
@@ -319,6 +320,16 @@ export default function CreateStudio({
                   text={recipe.tasting_notes}
                 />
               </div>
+            )}
+
+            {/* Social Creator Pack — clean image + caption + hashtags. Shown
+                once there's something worth posting (image or published link). */}
+            {(imageUrl || saved?.is_public) && (
+              <CreatorPack
+                recipe={recipe}
+                imageUrl={imageUrl}
+                link={saved?.is_public ? shareUrl : undefined}
+              />
             )}
           </div>
         </div>

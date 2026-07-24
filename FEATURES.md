@@ -83,9 +83,9 @@ through. Update the status as features land.
 | Bartender-approved badge (future) | ⬜ | |
 
 ### 6. Social Creator Pack
-| Generated social assets (IG/TikTok/Pinterest/etc.) | ⬜ | |
-| Generated copy (captions/hashtags/SEO/backstory) | 🟡 | tags/hashtags exist; no captions |
-| Sharing (page/link/remix) | 🟡 | basic share buttons ✅; asset download ⬜ |
+| Generated social assets (IG/TikTok/Pinterest/etc.) | ✅ | clean image download (no watermark) + per-platform caption/hashtag mix |
+| Generated copy (captions/hashtags/SEO/backstory) | ✅ | auto caption + platform hashtag sets; brand credit via `#Siply` not watermark |
+| Sharing (page/link/remix) | ✅ | share buttons ✅; image download ✅; native share sheet ✅ |
 
 ### 7. Canva Integration
 | "Edit in Canva" export (pre-populated) | ⬜ | Canva MCP available for our tooling; no user export |
@@ -161,7 +161,8 @@ and effort. We confirm/descope before each.
 
 **Then — utility & creator tools**
 8. **Collections** (save/favourite/organise) (§10).
-9. **Social Creator Pack**: captions + downloadable IG/TikTok cards (§6).
+9. ✅ **Social Creator Pack**: clean image download + auto captions + per-platform
+   hashtags (§6). **Brand attribution via hashtags, not watermarks** (Ben's call).
 10. **Canva "Edit in Canva" export** (§7).
 11. **Event Mode** (menu + quantities + combined basket) (§9) — merge with Night Planner.
 
