@@ -40,7 +40,7 @@ export default async function CocktailDetailPage({
 
       <article className="card overflow-hidden">
         {/* Hero image */}
-        <div className="relative aspect-square sm:aspect-video bg-warm-gradient">
+        <div className="relative aspect-square bg-warm-gradient">
           {cocktail.image_url ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img

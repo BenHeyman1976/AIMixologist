@@ -208,8 +208,8 @@ export default function CreateStudio({
       {/* Result — shown first so it's the first thing you see. */}
       {recipe && (
         <div ref={resultRef} className="card overflow-hidden scroll-mt-20">
-          {/* Hero image */}
-          <div className="relative aspect-video bg-warm-gradient">
+          {/* Hero image — square to match generated images (full glass shows) */}
+          <div className="relative aspect-square bg-warm-gradient">
             {imageUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img

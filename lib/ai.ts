@@ -34,6 +34,10 @@ Compliance rules you MUST follow:
 - If wellness/CBD ingredients are referenced, do NOT make any medical or health claims.
 - Do not imply an official brand partnership.
 
+"ingredients" must contain ONLY purchasable drink components (spirits, mixers,
+juices, syrups, fruit). Do NOT list glassware, "a glass", ice, or the garnish as
+ingredients — glassware and garnish have their own fields.
+
 Respond with ONLY valid minified JSON matching exactly this shape:
 {"name":"","ingredients":[],"method":[],"garnish":"","glassware":"","tasting_notes":"","occasion":"","alcohol_level":"","tags":[]}
 Where "alcohol_level" is one of: "alcohol-free", "low-alcohol", "full-strength".`;
@@ -191,7 +195,7 @@ async function generateImageOpenAI(
   const result = await client.images.generate({
     model: IMAGE_MODEL,
     prompt: imagePrompt,
-    size: "1024x1536", // portrait, matches the feed
+    size: "1024x1024", // square — full glass shows in every card/hero
     n: 1,
   });
 

@@ -7,7 +7,8 @@ enum Affiliates {
 
     private static let fillerPrefixes =
         ["top with", "topped with", "plenty of", "a little", "fresh", "chilled", "premium"]
-    private static let skip = ["ice", "cubed ice", "soda water", "water"]
+    private static let skip = ["soda water", "water", "still water", "tap water",
+                               "coupe", "tumbler", "highball", "flute", "rocks", "garnish"]
 
     /// Reduce an ingredient line to a searchable product term.
     static func searchTerm(_ ingredient: String) -> String {
@@ -34,6 +35,7 @@ enum Affiliates {
 
     static func isShoppable(_ ingredient: String) -> Bool {
         let term = searchTerm(ingredient)
+        if term.contains("glass") || term.contains("ice") { return false }
         return term.count > 1 && !skip.contains(term)
     }
 

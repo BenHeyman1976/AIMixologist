@@ -62,9 +62,14 @@ export function retailerLinks(ingredient: string): Retailer[] {
   ];
 }
 
-/** Ingredients that aren't really shoppable (water, ice, garnish-only). */
+/** Ingredients that aren't really shoppable (water, ice, glassware, garnish). */
 export function isShoppable(ingredient: string): boolean {
   const term = ingredientToSearchTerm(ingredient);
-  const skip = ["ice", "cubed ice", "soda water", "water"];
-  return term.length > 1 && !skip.includes(term);
+  // Anything mentioning a glass isn't a shopping item.
+  if (term.includes("glass")) return false;
+  const skip = [
+    "ice", "cubed ice", "crushed ice", "soda water", "water", "still water",
+    "tap water", "coupe", "tumbler", "highball", "flute", "rocks", "garnish",
+  ];
+  return term.length > 1 && !skip.includes(term) && !term.includes("ice cube");
 }
