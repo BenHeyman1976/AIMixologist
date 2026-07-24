@@ -140,7 +140,7 @@ export default function RecipeDetails({
       )}
 
       {compliance.length > 0 && (
-        <div className="rounded-2xl border border-cocktail-amber/40 bg-cocktail-amber/10 p-4 text-sm text-cocktail-plum">
+        <div className="space-y-1 rounded-2xl border border-cocktail-amber/40 bg-cocktail-amber/10 p-4 text-sm text-cocktail-plum">
           {compliance.map((note, i) => (
             <p key={i} className="flex gap-2">
               <span>⚠️</span>
@@ -149,6 +149,12 @@ export default function RecipeDetails({
           ))}
         </div>
       )}
+
+      <p className="border-t border-cocktail-peach/30 pt-4 text-xs text-cocktail-ink/50">
+        ✨ AI-generated recipe and image — a creative starting point, not
+        professionally verified. Figures (ABV, calories) are rough estimates.
+        Please drink responsibly.
+      </p>
     </div>
   );
 }
