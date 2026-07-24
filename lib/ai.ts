@@ -42,6 +42,9 @@ Accuracy rules (avoid inventing things):
   products, and do NOT cite a specific brand product unless the user named it.
 - Prefer GENERIC descriptions ("CBD-infused sparkling drink", "orange aperitif",
   "dry sparkling wine") over specific brand names, unless the user asked for a brand.
+- CBD / wellness sparkling drinks are typically FLAVOURED (e.g. elderflower, peach,
+  citrus, berry) — refer to a flavour or say "flavoured CBD sparkling drink", never
+  describe them as plain "CBD water".
 
 "ingredients" must contain ONLY purchasable drink components (spirits, mixers,
 juices, syrups, fruit). Do NOT list glassware, "a glass", ice, or the garnish as
@@ -212,12 +215,15 @@ async function generateImageOpenAI(
   // partnership, and we explicitly forbid logos/labels/text (see compliance).
   const STYLE =
     "Editorial, premium social-media cocktail photography in the 'Siply' house style: " +
-    "a single beautifully garnished cocktail in elegant glassware as the hero, " +
+    "a single beautifully garnished cocktail in an elegant, plain unbranded glass as the hero, " +
     "soft natural window light, light marble or pale stone surface, delicate blush, " +
     "rose, peach and gold tones, subtle florals and fresh citrus props, condensation on " +
     "the glass, shallow depth of field, clean negative space, chic and aspirational, " +
-    "vertical 4:5 composition. No people. No text, no logos, no brand labels, no " +
-    "trademarks, no packaging — generic glassware and bottles only.";
+    "square composition. " +
+    "STRICT RULES: no people; absolutely NO text, letters, words, numbers or writing " +
+    "anywhere in the image; no logos, brand names, labels or trademarks; do NOT depict " +
+    "any bottles, cans, tins or product packaging of any kind — show ONLY the finished " +
+    "drink in its glass with natural props (fruit, flowers, ice).";
   const imagePrompt = `${STYLE}\n\nCocktail: "${recipeName}". Concept: ${prompt}.`;
 
   const result = await client.images.generate({
