@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import MicButton from "@/components/MicButton";
 
 const EXAMPLES = [
   "Aperol + Trip CBD summer spritz",
@@ -29,13 +30,18 @@ export default function HomePrompt() {
         }}
         className="flex flex-col gap-3 sm:flex-row"
       >
-        <input
-          className="input flex-1 text-lg shadow-card"
-          placeholder="Describe your cocktail idea…"
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-          aria-label="Describe your cocktail idea"
-        />
+        <div className="flex flex-1 items-center gap-2 rounded-2xl bg-white pr-2 shadow-card">
+          <input
+            className="w-full flex-1 rounded-2xl bg-transparent px-4 py-3 text-lg outline-none"
+            placeholder="Describe (or say) your cocktail idea…"
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            aria-label="Describe your cocktail idea"
+          />
+          <MicButton
+            onResult={(t) => setPrompt((p) => (p ? `${p} ${t}` : t))}
+          />
+        </div>
         <button type="submit" className="btn-primary text-lg whitespace-nowrap">
           Generate Cocktail 🍹
         </button>

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import RecipeDetails from "@/components/RecipeDetails";
 import ShareButtons from "@/components/ShareButtons";
+import MicButton from "@/components/MicButton";
 import type { Cocktail, GeneratedRecipe, ImageUsage } from "@/lib/types";
 
 // The creation studio: prompt → recipe → image → save → publish → share.
@@ -215,13 +216,20 @@ export default function CreateStudio({
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
           />
-          <button
-            onClick={generateRecipe}
-            disabled={genLoading || prompt.trim().length < 3}
-            className="btn-primary"
-          >
-            {genLoading ? "Mixing your cocktail…" : "Generate recipe 🍹"}
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={generateRecipe}
+              disabled={genLoading || prompt.trim().length < 3}
+              className="btn-primary"
+            >
+              {genLoading ? "Mixing your cocktail…" : "Generate recipe 🍹"}
+            </button>
+            <MicButton
+              onResult={(t) => setPrompt((p) => (p ? `${p} ${t}` : t))}
+              title="Say your cocktail idea"
+            />
+            <span className="text-sm text-cocktail-ink/50">or tap 🎤 to speak</span>
+          </div>
         </div>
       )}
 
