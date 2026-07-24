@@ -18,6 +18,7 @@ export async function POST(req: NextRequest) {
       garnish,
       glassware,
       tasting_notes,
+      occasion,
       cocktailId,
     } = await req.json();
 
@@ -34,6 +35,7 @@ export async function POST(req: NextRequest) {
       ? ingredients.slice(0, 5).join(", ")
       : "";
     const description = [
+      occasion ? `Occasion / setting: ${occasion}.` : "",
       glassware ? `Served in a ${glassware}.` : "",
       ingList ? `Made with: ${ingList}.` : "",
       garnish ? `Garnish: ${garnish}.` : "",

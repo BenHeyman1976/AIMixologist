@@ -52,6 +52,14 @@ Accuracy rules (avoid inventing things):
   "soda water", "sparkling water", "coriander", "double cream", etc.
 - Prefer common, supermarket-available ingredients so people can actually buy them.
 
+Match the cocktail to the occasion or setting mentioned — ingredients, colour,
+name and mood should all fit:
+- Halloween → dark, moody, dramatic (blackberry, blood orange, activated charcoal-free dark hues).
+- Beach / BBQ / tropical → refreshing, fruity, holiday feel (mango, pineapple, lime, coconut).
+- Wedding / celebration → elegant and sparkling (prosecco, elderflower, delicate garnish).
+- Christmas / winter → warming and spiced (cranberry, cinnamon, orange, rosemary).
+- Summer garden → light, floral, crisp.
+
 "ingredients" must contain ONLY purchasable drink components (spirits, mixers,
 juices, syrups, fruit). Do NOT list glassware, "a glass", ice, or the garnish as
 ingredients — glassware and garnish have their own fields.
@@ -221,17 +229,20 @@ async function generateImageOpenAI(
   // partnership, and we explicitly forbid logos/labels/text (see compliance).
   const STYLE =
     "Editorial, premium social-media cocktail photography in the 'Siply' house style. " +
-    "IMPORTANT: the drink's colour and garnish must be TRUE TO ITS ACTUAL INGREDIENTS " +
-    "(e.g. cranberry = deep red, aperol = orange, gin & tonic = clear, matcha = green) — " +
+    "1) The drink's colour and garnish must be TRUE TO ITS ACTUAL INGREDIENTS " +
+    "(cranberry = deep red, aperol = orange, gin & tonic = clear, matcha = green) — " +
     "do not tint the drink pink or peach unless its ingredients are. " +
-    "Style the SCENE (not the drink) elegantly: soft natural window light, pale marble or " +
-    "stone surface, a few tasteful props that match this specific cocktail (its own fruit, " +
-    "herbs or seasonal touches), subtle gold accents, condensation on the glass, shallow " +
-    "depth of field, clean negative space, chic and aspirational, square composition. " +
+    "2) Set the SCENE and BACKDROP to reflect the occasion or location described " +
+    "(e.g. a sunny beach with soft sand and sea bokeh; an elegant wedding table with " +
+    "white florals; a moody, dark Halloween scene with autumn touches; a cosy cand-lit " +
+    "festive setting; a bright summer garden) — with tasteful props matching the cocktail " +
+    "and the moment. Natural light appropriate to that setting. " +
+    "3) Keep it premium: shallow depth of field, subtle gold accents, condensation on the " +
+    "glass, chic and aspirational, square composition. " +
     "STRICT RULES: no people; absolutely NO text, letters, words, numbers or writing " +
     "anywhere in the image; no logos, brand names, labels or trademarks; do NOT depict " +
     "any bottles, cans, tins or product packaging of any kind — show ONLY the finished " +
-    "drink in a plain unbranded glass with natural props.";
+    "drink in a plain unbranded glass within the scene.";
   const imagePrompt = `${STYLE}\n\nCocktail: "${recipeName}". ${prompt}`;
 
   const result = await client.images.generate({

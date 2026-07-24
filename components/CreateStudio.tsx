@@ -97,6 +97,7 @@ export default function CreateStudio({
           garnish: recipe.garnish,
           glassware: recipe.glassware,
           tasting_notes: recipe.tasting_notes,
+          occasion: recipe.occasion,
           cocktailId: saved?.id,
         }),
       });
