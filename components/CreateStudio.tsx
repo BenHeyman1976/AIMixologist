@@ -93,6 +93,10 @@ export default function CreateStudio({
         body: JSON.stringify({
           name: recipe.name,
           prompt,
+          ingredients: recipe.ingredients,
+          garnish: recipe.garnish,
+          glassware: recipe.glassware,
+          tasting_notes: recipe.tasting_notes,
           cocktailId: saved?.id,
         }),
       });

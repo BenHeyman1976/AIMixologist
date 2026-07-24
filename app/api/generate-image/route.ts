@@ -11,7 +11,15 @@ import { consumeImageQuota, getCocktail, updateCocktail } from "@/lib/repo";
 export async function POST(req: NextRequest) {
   try {
     const user = getCurrentUser();
-    const { name, prompt, cocktailId } = await req.json();
+    const {
+      name,
+      prompt,
+      ingredients,
+      garnish,
+      glassware,
+      tasting_notes,
+      cocktailId,
+    } = await req.json();
 
     if (!name || !prompt) {
       return NextResponse.json(
@@ -19,6 +27,21 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+
+    // Build a rich description so the image matches the ACTUAL drink
+    // (colour, garnish, glass) — not just the name.
+    const ingList = Array.isArray(ingredients)
+      ? ingredients.slice(0, 5).join(", ")
+      : "";
+    const description = [
+      glassware ? `Served in a ${glassware}.` : "",
+      ingList ? `Made with: ${ingList}.` : "",
+      garnish ? `Garnish: ${garnish}.` : "",
+      tasting_notes ? String(tasting_notes) : "",
+      `Original idea: ${prompt}.`,
+    ]
+      .filter(Boolean)
+      .join(" ");
 
     // Enforce the monthly allowance BEFORE spending money on a generation.
     const quota = await consumeImageQuota(user.id, cocktailId);
@@ -35,7 +58,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const image = await generateImage(name, prompt);
+    const image = await generateImage(name, description);
 
     // Persist onto the cocktail if we have one.
     if (cocktailId) {

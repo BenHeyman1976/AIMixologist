@@ -220,17 +220,19 @@ async function generateImageOpenAI(
   // Brand names from the prompt are visual inspiration only, never an official
   // partnership, and we explicitly forbid logos/labels/text (see compliance).
   const STYLE =
-    "Editorial, premium social-media cocktail photography in the 'Siply' house style: " +
-    "a single beautifully garnished cocktail in an elegant, plain unbranded glass as the hero, " +
-    "soft natural window light, light marble or pale stone surface, delicate blush, " +
-    "rose, peach and gold tones, subtle florals and fresh citrus props, condensation on " +
-    "the glass, shallow depth of field, clean negative space, chic and aspirational, " +
-    "square composition. " +
+    "Editorial, premium social-media cocktail photography in the 'Siply' house style. " +
+    "IMPORTANT: the drink's colour and garnish must be TRUE TO ITS ACTUAL INGREDIENTS " +
+    "(e.g. cranberry = deep red, aperol = orange, gin & tonic = clear, matcha = green) — " +
+    "do not tint the drink pink or peach unless its ingredients are. " +
+    "Style the SCENE (not the drink) elegantly: soft natural window light, pale marble or " +
+    "stone surface, a few tasteful props that match this specific cocktail (its own fruit, " +
+    "herbs or seasonal touches), subtle gold accents, condensation on the glass, shallow " +
+    "depth of field, clean negative space, chic and aspirational, square composition. " +
     "STRICT RULES: no people; absolutely NO text, letters, words, numbers or writing " +
     "anywhere in the image; no logos, brand names, labels or trademarks; do NOT depict " +
     "any bottles, cans, tins or product packaging of any kind — show ONLY the finished " +
-    "drink in its glass with natural props (fruit, flowers, ice).";
-  const imagePrompt = `${STYLE}\n\nCocktail: "${recipeName}". Concept: ${prompt}.`;
+    "drink in a plain unbranded glass with natural props.";
+  const imagePrompt = `${STYLE}\n\nCocktail: "${recipeName}". ${prompt}`;
 
   const result = await client.images.generate({
     model: IMAGE_MODEL,
