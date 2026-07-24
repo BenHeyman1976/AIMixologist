@@ -1,10 +1,12 @@
 import type { GeneratedRecipe } from "@/lib/types";
 import ShopIngredients from "@/components/ShopIngredients";
+import { displayMeasure, type UnitSystem } from "@/lib/units";
 
 // Presentational recipe body — reused on the create page and detail page.
 export default function RecipeDetails({
   recipe,
   compliance = [],
+  units = "ml",
 }: {
   recipe: Pick<
     GeneratedRecipe,
@@ -17,6 +19,7 @@ export default function RecipeDetails({
     | "tags"
   >;
   compliance?: string[];
+  units?: UnitSystem;
 }) {
   return (
     <div className="space-y-6">
@@ -29,7 +32,7 @@ export default function RecipeDetails({
             {recipe.ingredients.map((ing, i) => (
               <li key={i} className="flex gap-2">
                 <span className="text-cocktail-coral">•</span>
-                <span>{ing}</span>
+                <span>{displayMeasure(ing, units)}</span>
               </li>
             ))}
           </ul>
@@ -42,7 +45,7 @@ export default function RecipeDetails({
             {recipe.method.map((step, i) => (
               <li key={i} className="flex gap-2">
                 <span className="font-semibold text-cocktail-coral">{i + 1}.</span>
-                <span>{step}</span>
+                <span>{displayMeasure(step, units)}</span>
               </li>
             ))}
           </ol>

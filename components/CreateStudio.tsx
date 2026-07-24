@@ -277,7 +277,7 @@ export default function CreateStudio({
               {recipe.name}
             </h2>
 
-            <RecipeDetails recipe={recipe} compliance={compliance} />
+            <RecipeDetails recipe={recipe} compliance={compliance} units={units} />
 
             {/* Image usage meter */}
             {usage && (

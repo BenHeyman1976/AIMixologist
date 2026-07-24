@@ -51,6 +51,12 @@ Accuracy rules (avoid inventing things):
 - Use BRITISH English ingredient names: "sugar syrup" (never "simple syrup"),
   "soda water", "sparkling water", "coriander", "double cream", etc.
 - Prefer common, supermarket-available ingredients so people can actually buy them.
+- Do NOT add a bespoke syrup to every drink. Avoid niche invented syrups
+  ("chilli syrup", "lavender syrup") — favour fresh ingredients, classic builds
+  and established products (fresh chilli, ginger beer, tonic, elderflower cordial,
+  Angostura bitters, fresh citrus, good spirits). Sugar syrup is fine occasionally.
+- Lean towards recognisable British-pub / classic cocktails and simple, real
+  techniques rather than fussy, over-engineered recipes.
 
 Match the cocktail to the occasion or setting mentioned — ingredients, colour,
 name and mood should all fit:
