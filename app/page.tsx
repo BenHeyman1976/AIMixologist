@@ -12,48 +12,51 @@ export default async function HomePage() {
     <div>
       {/* Hero */}
       <section className="relative overflow-hidden bg-warm-gradient">
-        <div className="mx-auto max-w-6xl px-4 py-20 sm:py-28">
-          <div className="max-w-3xl">
-            <p className="mb-3 inline-block rounded-full bg-white/20 px-4 py-1 text-sm font-semibold text-white backdrop-blur">
-              🍹 Community-driven AI cocktail creator
-            </p>
-            <h1 className="font-display text-4xl font-extrabold leading-tight text-white sm:text-6xl">
-              Turn any idea into a stunning cocktail.
-            </h1>
-            <p className="mt-4 max-w-xl text-lg text-white/90">
-              Describe a mood, a flavour, a brand or an occasion. Bob crafts the
-              recipe, generates a marketing-ready image, and shares it with the
-              community.
-            </p>
-            <div className="mt-8">
-              <HomePrompt />
-            </div>
+        <div className="mx-auto max-w-6xl px-4 py-20 text-center sm:py-28">
+          <p className="mb-4 inline-block rounded-full bg-white/20 px-4 py-1 text-sm font-semibold text-white backdrop-blur">
+            🍸 Your cocktail concierge
+          </p>
+          <h1 className="font-display text-4xl font-extrabold leading-tight text-white sm:text-6xl">
+            Imagine. Create. Enjoy.
+          </h1>
+          <p className="mx-auto mt-4 max-w-xl text-lg text-white/90">
+            Describe any mood, flavour or occasion — Siply crafts the cocktail,
+            generates a gorgeous image, and plans your whole night. At home, and out.
+          </p>
+          <div className="mt-8 flex justify-center">
+            <HomePrompt />
           </div>
+          <p className="mt-4 text-sm text-white/70">
+            Free to use · No sign-up to try · Please drink responsibly
+          </p>
         </div>
       </section>
 
       {/* How it works */}
       <section className="mx-auto max-w-6xl px-4 py-16">
-        <div className="grid gap-6 sm:grid-cols-3">
+        <h2 className="text-center font-display text-3xl font-bold text-cocktail-plum">
+          Your night, sorted in seconds
+        </h2>
+        <div className="mt-10 grid gap-6 sm:grid-cols-3">
           {[
             {
               icon: "✨",
-              title: "Describe it",
-              body: "Type any idea — “tropical for a BBQ”, a brand, a mood. Unlimited free recipes.",
+              title: "Imagine",
+              body: "Type any idea — “low-alcohol summer spritz”, a vibe, an occasion. Unlimited free recipes.",
             },
             {
               icon: "🖼️",
-              title: "Picture it",
-              body: "Generate a premium lifestyle image. The image is the hero of every card.",
+              title: "Create",
+              body: "Generate a stunning, share-ready cocktail image. The picture is the hero of every card.",
             },
             {
-              icon: "🌍",
-              title: "Share it",
-              body: "Publish to the gallery. Get likes, votes and comments from the community.",
+              icon: "🥂",
+              title: "Enjoy",
+              body: "Plan a paced night out, show the barman how to make it, or share the shopping list for a night in.",
             },
           ].map((s) => (
-            <div key={s.title} className="card p-6">
-              <div className="text-3xl">{s.icon}</div>
+            <div key={s.title} className="card p-6 text-center">
+              <div className="text-4xl">{s.icon}</div>
               <h3 className="mt-3 font-display text-xl font-bold text-cocktail-plum">
                 {s.title}
               </h3>
@@ -64,7 +67,7 @@ export default async function HomePage() {
       </section>
 
       {/* Trending */}
-      <section className="mx-auto max-w-6xl px-4 pb-20">
+      <section className="mx-auto max-w-6xl px-4 pb-8">
         <div className="mb-6 flex items-center justify-between">
           <h2 className="font-display text-2xl font-bold text-cocktail-plum">
             Trending in the community
@@ -88,6 +91,25 @@ export default async function HomePage() {
             ))}
           </div>
         )}
+      </section>
+
+      {/* Closing CTA */}
+      <section className="mx-auto max-w-6xl px-4 pb-24 pt-8">
+        <div className="card bg-warm-gradient p-10 text-center sm:p-14">
+          <h2 className="font-display text-3xl font-extrabold text-white sm:text-4xl">
+            Ready to make something beautiful?
+          </h2>
+          <p className="mx-auto mt-3 max-w-lg text-white/90">
+            Create your first cocktail free — no sign-up needed. Share it, get
+            voted up, and build your collection.
+          </p>
+          <Link
+            href="/create"
+            className="mt-6 inline-block rounded-full bg-white px-8 py-4 font-bold text-cocktail-plum shadow-card transition hover:scale-[1.02]"
+          >
+            Create your cocktail 🍸
+          </Link>
+        </div>
       </section>
     </div>
   );

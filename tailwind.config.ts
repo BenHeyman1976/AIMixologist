@@ -1,6 +1,6 @@
 import type { Config } from "tailwindcss";
 
-// Warm cocktail palette — premium, social, image-led.
+// Blush / rose / gold palette — chic, feminine, premium (matches the iOS app).
 const config: Config = {
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
@@ -10,24 +10,24 @@ const config: Config = {
     extend: {
       colors: {
         cocktail: {
-          peach: "#FFB17A",
-          coral: "#FF6B6B",
-          amber: "#F59E0B",
-          sunset: "#FF8C42",
-          plum: "#5B2333",
-          cream: "#FFF8F0",
-          ink: "#1A1410",
+          peach: "#FFC9DD",
+          coral: "#E85D8A",
+          amber: "#C9A14A",
+          sunset: "#FF9EC0",
+          plum: "#5A1F3D",
+          cream: "#FFF5F8",
+          ink: "#2A1620",
         },
       },
       fontFamily: {
         display: ["var(--font-display)", "Georgia", "serif"],
       },
       boxShadow: {
-        card: "0 10px 40px -12px rgba(91, 35, 51, 0.35)",
+        card: "0 10px 40px -12px rgba(90, 31, 61, 0.35)",
       },
       backgroundImage: {
         "warm-gradient":
-          "linear-gradient(135deg, #FF8C42 0%, #FF6B6B 50%, #5B2333 100%)",
+          "linear-gradient(135deg, #FF9EC0 0%, #E85D8A 50%, #5A1F3D 100%)",
       },
     },
   },
