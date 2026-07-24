@@ -45,6 +45,9 @@ Accuracy rules (avoid inventing things):
 - CBD / wellness sparkling drinks are typically FLAVOURED (e.g. elderflower, peach,
   citrus, berry) — refer to a flavour or say "flavoured CBD sparkling drink", never
   describe them as plain "CBD water".
+- Use BRITISH English ingredient names: "sugar syrup" (never "simple syrup"),
+  "soda water", "sparkling water", "coriander", "double cream", etc.
+- Prefer common, supermarket-available ingredients so people can actually buy them.
 
 "ingredients" must contain ONLY purchasable drink components (spirits, mixers,
 juices, syrups, fruit). Do NOT list glassware, "a glass", ice, or the garnish as

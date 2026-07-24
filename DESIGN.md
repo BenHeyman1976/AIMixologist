@@ -50,8 +50,25 @@ The generated image is the hero of everything. House style:
 - Editorial, premium; **soft natural light**, marble/pale surface, blush/rose/gold
   tones, subtle florals & fresh citrus props, condensation, shallow depth of field.
 - **Square (1:1)** for consistency across web cards and the app.
-- **Never** render logos, brand labels, text, packaging, or people. Generic
-  glassware/bottles only. (Legal + quality — see compliance.)
+
+### 🚫 Imagery & brand policy (hard rules — never break)
+- **No bottles, cans, tins or packaging of any kind.** Show only the finished
+  drink in a plain, unbranded glass with natural props (fruit, flowers, ice).
+- **No text, letters, numbers or writing** anywhere in the image (this is what
+  produced the garbled "SUMMER" bottle — banned).
+- **No logos, brand names, labels, trademarks, or people.**
+- **AI makes the drink; brands supply their own product photos.** A real brand's
+  packaging may ONLY appear when they are a confirmed, paying sponsor
+  (`sponsored_brands`), using **their** official authorised imagery — never
+  AI-approximated. This turns brand imagery into a revenue feature, not a lawsuit.
+
+## Terminology (British English)
+UK audience — use British terms in recipes and copy:
+- **"sugar syrup"** not "simple syrup"; **ml** not oz (oz only if the user picks it);
+  "soda water", "sparkling water", "still water", "double cream", "coriander".
+- Singles/doubles framing: a single = 25ml, a double = 50ml.
+- Prefer common, supermarket-available ingredients. For easy DIY basics (e.g.
+  sugar syrup) that's fine — bar staff have them and shoppers can buy or make them.
 
 ## Voice & tone
 - Warm, chic, a little playful — "your cocktail concierge".
