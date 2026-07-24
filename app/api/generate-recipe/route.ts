@@ -6,7 +6,7 @@ import { complianceNotesFor } from "@/lib/compliance";
 // Recipe generation is UNLIMITED and free for every user.
 export async function POST(req: NextRequest) {
   try {
-    const { prompt } = await req.json();
+    const { prompt, units } = await req.json();
     if (!prompt || typeof prompt !== "string" || prompt.trim().length < 3) {
       return NextResponse.json(
         { error: "Please describe your cocktail idea (at least a few words)." },
@@ -14,7 +14,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const recipe = await generateRecipe(prompt.trim());
+    const unitSystem = units === "oz" ? "oz" : "ml"; // default metric
+    const recipe = await generateRecipe(prompt.trim(), unitSystem);
     const compliance = complianceNotesFor(recipe);
 
     return NextResponse.json({ recipe, compliance, mode: aiMode() });

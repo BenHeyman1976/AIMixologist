@@ -25,6 +25,17 @@ export default function CreateStudio({
   const [pubLoading, setPubLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Measurement preference — defaults to ml (UK/metric), remembered per browser.
+  const [units, setUnits] = useState<"ml" | "oz">("ml");
+  useEffect(() => {
+    const saved = window.localStorage.getItem("siply_units");
+    if (saved === "oz" || saved === "ml") setUnits(saved);
+  }, []);
+  function changeUnits(u: "ml" | "oz") {
+    setUnits(u);
+    window.localStorage.setItem("siply_units", u);
+  }
+
   // When the user arrives from the home page with an idea already typed,
   // generate the recipe straight away — no second click needed. The ref
   // guard stops React's dev StrictMode from firing it twice.
@@ -55,7 +66,7 @@ export default function CreateStudio({
       const res = await fetch("/api/generate-recipe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({ prompt, units }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
@@ -167,6 +178,27 @@ export default function CreateStudio({
           Describe your idea. Iterate as many times as you like — recipes are
           unlimited and free.
         </p>
+        {/* Measurement preference */}
+        <div className="mt-4 flex items-center gap-2">
+          <span className="text-sm font-semibold text-cocktail-ink/60">
+            Measures:
+          </span>
+          <div className="inline-flex rounded-full bg-white p-1 shadow-sm">
+            {(["ml", "oz"] as const).map((u) => (
+              <button
+                key={u}
+                onClick={() => changeUnits(u)}
+                className={`rounded-full px-4 py-1.5 text-sm font-semibold transition ${
+                  units === u
+                    ? "bg-cocktail-coral text-white"
+                    : "text-cocktail-plum hover:bg-cocktail-cream"
+                }`}
+              >
+                {u === "ml" ? "ml (metric)" : "oz (US)"}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Initial prompt — shown only until the first recipe exists. */}

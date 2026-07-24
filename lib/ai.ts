@@ -26,13 +26,22 @@ function getOpenAI(): OpenAI {
   return new OpenAI({ apiKey });
 }
 
-const RECIPE_SYSTEM_PROMPT = `You are Bob, an expert AI mixologist. Given a user's idea, mood, brand,
-flavour or occasion, invent ONE creative, well-balanced cocktail (or mocktail).
+export type UnitSystem = "ml" | "oz";
+
+const RECIPE_SYSTEM_PROMPT = `You are Siply, an expert AI mixologist for a mainly UK audience. Given a user's
+idea, mood, brand, flavour or occasion, invent ONE creative, well-balanced
+cocktail (or mocktail).
 
 Compliance rules you MUST follow:
 - Never encourage excessive or unsafe alcohol consumption.
 - If wellness/CBD ingredients are referenced, do NOT make any medical or health claims.
 - Do not imply an official brand partnership.
+
+Accuracy rules (avoid inventing things):
+- Use only real, widely-available ingredients. Do NOT invent brands or fictional
+  products, and do NOT cite a specific brand product unless the user named it.
+- Prefer GENERIC descriptions ("CBD-infused sparkling drink", "orange aperitif",
+  "dry sparkling wine") over specific brand names, unless the user asked for a brand.
 
 "ingredients" must contain ONLY purchasable drink components (spirits, mixers,
 juices, syrups, fruit). Do NOT list glassware, "a glass", ice, or the garnish as
@@ -44,21 +53,31 @@ Where "alcohol_level" is one of: "alcohol-free", "low-alcohol", "full-strength".
 
 // ── Recipe generation ────────────────────────────────────────
 
-export async function generateRecipe(prompt: string): Promise<GeneratedRecipe> {
+export async function generateRecipe(
+  prompt: string,
+  units: UnitSystem = "ml"
+): Promise<GeneratedRecipe> {
   if (AI_MODE === "openai") {
-    return generateRecipeOpenAI(prompt);
+    return generateRecipeOpenAI(prompt, units);
   }
-  return generateRecipeMock(prompt);
+  return generateRecipeMock(prompt, units);
 }
 
-async function generateRecipeOpenAI(prompt: string): Promise<GeneratedRecipe> {
+async function generateRecipeOpenAI(
+  prompt: string,
+  units: UnitSystem
+): Promise<GeneratedRecipe> {
   const client = getOpenAI();
+  const unitInstruction =
+    units === "oz"
+      ? "Give all liquid measures in US fluid ounces (oz)."
+      : "Give all liquid measures in millilitres (ml), UK style (a single = 25ml, a double = 50ml).";
   const completion = await client.chat.completions.create({
     model: TEXT_MODEL,
     response_format: { type: "json_object" },
     messages: [
       { role: "system", content: RECIPE_SYSTEM_PROMPT },
-      { role: "user", content: prompt },
+      { role: "user", content: `${prompt}\n\n${unitInstruction}` },
     ],
     temperature: 0.9,
   });
@@ -67,8 +86,17 @@ async function generateRecipeOpenAI(prompt: string): Promise<GeneratedRecipe> {
   return coerceRecipe(parsed, prompt);
 }
 
+/** Converts "50ml" style measures to rounded US fluid ounces, e.g. "1.75 oz". */
+function mlToOz(text: string): string {
+  return text.replace(/(\d+)\s?ml/gi, (_m, n) => {
+    const oz = Number(n) / 29.5735;
+    const rounded = Math.round(oz * 4) / 4; // nearest quarter-ounce
+    return `${rounded} oz`;
+  });
+}
+
 /** Deterministic-ish mock generator. Free, offline, and good for demos. */
-function generateRecipeMock(prompt: string): GeneratedRecipe {
+function generateRecipeMock(prompt: string, units: UnitSystem = "ml"): GeneratedRecipe {
   const p = prompt.toLowerCase();
 
   const alcoholFree =
@@ -124,8 +152,8 @@ function generateRecipeMock(prompt: string): GeneratedRecipe {
 
   return {
     name,
-    ingredients,
-    method,
+    ingredients: units === "oz" ? ingredients.map(mlToOz) : ingredients,
+    method: units === "oz" ? method.map(mlToOz) : method,
     garnish: tropical ? "Mango fan and a mint sprig" : festive ? "Orange twist and rosemary" : "Orange slice",
     glassware: "Large wine glass or balloon glass",
     tasting_notes: tropical
