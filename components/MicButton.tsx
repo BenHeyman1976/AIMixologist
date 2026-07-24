@@ -74,7 +74,7 @@ export default function MicButton({
       className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-lg shadow-sm transition ${
         listening
           ? "animate-pulse bg-cocktail-coral text-white"
-          : "bg-white text-cocktail-plum hover:bg-cocktail-cream"
+          : "border border-cocktail-peach bg-white text-cocktail-plum hover:bg-cocktail-cream"
       }`}
     >
       {listening ? "●" : "🎤"}

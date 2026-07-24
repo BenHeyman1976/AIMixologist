@@ -337,13 +337,19 @@ export default function CreateStudio({
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
           />
-          <button
-            onClick={generateRecipe}
-            disabled={genLoading || prompt.trim().length < 3}
-            className="btn-secondary"
-          >
-            {genLoading ? "Mixing…" : "Regenerate 🔄"}
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={generateRecipe}
+              disabled={genLoading || prompt.trim().length < 3}
+              className="btn-secondary"
+            >
+              {genLoading ? "Mixing…" : "Regenerate 🔄"}
+            </button>
+            <MicButton
+              onResult={(t) => setPrompt((p) => (p ? `${p} ${t}` : t))}
+              title="Say your changes"
+            />
+          </div>
         </div>
       )}
     </div>
