@@ -7,7 +7,7 @@
 // The shape mirrors the Supabase schema in supabase/schema.sql so the
 // repository layer (lib/repo.ts) can switch between the two transparently.
 
-import type { Cocktail, Comment, SponsoredBrand } from "./types";
+import type { Cocktail, CocktailMake, Comment, SponsoredBrand } from "./types";
 import { DEMO_USER } from "./auth";
 
 interface MockDB {
@@ -18,6 +18,7 @@ interface MockDB {
   // key: `${userId}:${YYYY-MM}` → count of images generated that month.
   imageUsage: Record<string, number>;
   sponsoredBrands: SponsoredBrand[];
+  makes: CocktailMake[];
 }
 
 // Persist across Next.js hot-reloads in dev via globalThis.
@@ -106,6 +107,18 @@ function seed(): MockDB {
     ],
     votes: {},
     imageUsage: {},
+    makes: [
+      {
+        id: "m1",
+        cocktail_id: "seed-1",
+        user_id: DEMO_USER.id,
+        username: "tiki_tom",
+        rating: 5,
+        photo_url: null,
+        note: "Made this for the weekend — huge hit! Went easy on the soda.",
+        created_at: new Date(now - 1000 * 60 * 60 * 3).toISOString(),
+      },
+    ],
     sponsoredBrands: [
       {
         id: "sb-1",

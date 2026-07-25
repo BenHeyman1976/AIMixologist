@@ -34,9 +34,9 @@ Build order is driven by the Jobs To Be Done, not by more AI features.
 
 - **JTBD covered well:** #2 Discover (gallery, trending, Remix, DNA "more like this").
 - **JTBD now covered:** #3 Use what I own (`/pantry`).
-- **Biggest remaining gap = the moat:** #5 Show off *the real thing* — real-photo
-  upload, "I made it", ratings/reviews, community photos on a living cocktail page.
-  Needs real user accounts + a `cocktail_photos` (+ `ratings`) table + a Storage bucket.
+- **JTBD #5 Show off *the real thing* — ✅ BUILT:** "I made it" + real-photo upload +
+  star ratings + reviews + community photo wall on the living cocktail page.
+  Turn it on with `supabase/migrations/002_cocktail_makes.sql` + the Storage bucket.
 - **Reframe:** the Social Creator Pack (AI-image sharing) is inspiration; the primary
   share should become the user's **real photo**. Evolve, don't scrap.
 - **Revenue (unchanged):** brand campaigns, affiliate shopping, advertising, event/wedding
@@ -127,14 +127,15 @@ Build order is driven by the Jobs To Be Done, not by more AI features.
 | Collections (create/rename/notes/reorder/share) | ⬜ | |
 
 ### 11. Community
-| Public cocktail pages | ✅ | detail page |
+| Public cocktail pages (living page) | ✅ | recipe + DNA + made-it + photos + reviews + remix + similar |
 | Like / comment / share | ✅ | |
+| **"I made this" + real photos + ratings + reviews** | ✅ | the trust moat — needs migration 002 + Storage bucket |
 | Save | 🟡 | |
-| Remix | ⬜ | see §3 |
-| Follow creators | ⬜ | |
+| Remix | ✅ | see §3 |
+| Follow creators | ⬜ | needs real auth + follows table |
 | Report content | ⬜ | |
 | Creator profiles (public, followers, featured) | 🟡 | profile shows own cocktails only |
-| Discovery (trending/new/most-voted) | ✅ | most-remixed/saved/seasonal ⬜ |
+| Discovery (trending/new/most-voted + "more like this" DNA) | ✅ | most-remixed/saved/seasonal ⬜ |
 
 ### 12. Gamification
 | Achievements · Leaderboards | ⬜ | |

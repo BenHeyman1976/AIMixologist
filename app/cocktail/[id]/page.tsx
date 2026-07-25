@@ -6,6 +6,7 @@ import ShareButtons from "@/components/ShareButtons";
 import CreatorPack from "@/components/CreatorPack";
 import RemixBar from "@/components/RemixBar";
 import CocktailCard from "@/components/CocktailCard";
+import MadeItPanel from "@/components/MadeItPanel";
 import Comments from "@/components/Comments";
 import { cocktailUrl } from "@/lib/site";
 import {
@@ -14,6 +15,7 @@ import {
   listComments,
   matchSponsoredBrand,
   findSimilarCocktails,
+  getMakeStats,
 } from "@/lib/repo";
 import { getCurrentUser } from "@/lib/auth";
 import { complianceNotesFor } from "@/lib/compliance";
@@ -29,11 +31,12 @@ export default async function CocktailDetailPage({
   if (!cocktail) notFound();
 
   const user = getCurrentUser();
-  const [comments, voted, sponsor, similar] = await Promise.all([
+  const [comments, voted, sponsor, similar, makeStats] = await Promise.all([
     listComments(cocktail.id),
     hasVoted(cocktail.id, user.id),
     matchSponsoredBrand(cocktail),
     findSimilarCocktails(cocktail, 3),
+    getMakeStats(cocktail.id),
   ]);
 
   const compliance = complianceNotesFor(cocktail);
@@ -98,6 +101,9 @@ export default async function CocktailDetailPage({
           </div>
 
           <RecipeDetails recipe={cocktail} compliance={compliance} />
+
+          {/* Made it — real photos + ratings + reviews (the trust moat). */}
+          <MadeItPanel cocktailId={cocktail.id} initialStats={makeStats} />
 
           {/* Remix — the viral loop. Turn this drink into the next one. */}
           <RemixBar cocktailId={cocktail.id} />

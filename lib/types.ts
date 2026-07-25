@@ -79,6 +79,31 @@ export interface Comment {
   created_at: string;
 }
 
+/**
+ * A "I made this" record — the real-world validation that is the product's moat.
+ * One row per time someone actually made a cocktail: optional star rating,
+ * optional real photo, optional note/review.
+ */
+export interface CocktailMake {
+  id: string;
+  cocktail_id: string;
+  user_id: string;
+  username: string;
+  rating: number | null; // 1–5
+  photo_url: string | null; // real user photo
+  note: string | null; // short review
+  created_at: string;
+}
+
+/** Aggregated community proof for a cocktail. */
+export interface MakeStats {
+  made_count: number;
+  rating_avg: number | null;
+  rating_count: number;
+  photos: CocktailMake[]; // makes that include a photo, newest first
+  reviews: CocktailMake[]; // makes that include a note, newest first
+}
+
 export interface ImageUsage {
   used: number;
   limit: number;

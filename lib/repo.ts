@@ -13,10 +13,12 @@ import { db } from "./mockStore";
 import { dnaDistance, flavourProfileFor } from "./dna";
 import type {
   Cocktail,
+  CocktailMake,
   Comment,
   GallerySort,
   GeneratedRecipe,
   ImageUsage,
+  MakeStats,
   RecipeMeta,
   SponsoredBrand,
 } from "./types";
@@ -391,6 +393,115 @@ export async function addComment(
   }
   db().comments.push(comment);
   return comment;
+}
+
+// ── "I made this" — real-world validation (the moat) ──────────
+
+const COMMUNITY_PHOTO_BUCKET =
+  process.env.COMMUNITY_PHOTO_BUCKET ?? "community-photos";
+
+/**
+ * Uploads a user's real cocktail photo. In Supabase mode it goes to the
+ * community-photos Storage bucket and we return its public URL; without
+ * Supabase we simply pass the data URL straight through (fine for local demos).
+ */
+async function uploadCommunityPhoto(
+  dataUrl: string,
+  userId: string
+): Promise<string> {
+  const supabase = getServiceSupabase();
+  if (!(isSupabaseConfigured && supabase)) return dataUrl;
+
+  const match = /^data:(image\/[a-zA-Z+]+);base64,(.+)$/.exec(dataUrl);
+  if (!match) return dataUrl; // already a URL, or unexpected format
+  const contentType = match[1];
+  const ext = contentType.split("/")[1]?.replace("jpeg", "jpg") ?? "png";
+  const buffer = Buffer.from(match[2], "base64");
+  const path = `${userId}/${randomUUID()}.${ext}`;
+
+  const { error } = await supabase.storage
+    .from(COMMUNITY_PHOTO_BUCKET)
+    .upload(path, buffer, { contentType, upsert: false });
+  if (error) throw new Error(`Photo upload failed: ${error.message}`);
+
+  const { data } = supabase.storage.from(COMMUNITY_PHOTO_BUCKET).getPublicUrl(path);
+  return data.publicUrl;
+}
+
+export interface AddMakeInput {
+  cocktailId: string;
+  userId: string;
+  username: string;
+  rating?: number | null;
+  note?: string | null;
+  photoDataUrl?: string | null;
+}
+
+export async function addMake(input: AddMakeInput): Promise<CocktailMake> {
+  const rating =
+    input.rating && input.rating >= 1 && input.rating <= 5
+      ? Math.round(input.rating)
+      : null;
+  const note = input.note?.trim() ? input.note.trim().slice(0, 500) : null;
+  const photo_url = input.photoDataUrl
+    ? await uploadCommunityPhoto(input.photoDataUrl, input.userId)
+    : null;
+
+  const make: CocktailMake = {
+    id: randomUUID(),
+    cocktail_id: input.cocktailId,
+    user_id: input.userId,
+    username: input.username,
+    rating,
+    photo_url,
+    note,
+    created_at: new Date().toISOString(),
+  };
+
+  const supabase = getServiceSupabase();
+  if (isSupabaseConfigured && supabase) {
+    const { data, error } = await supabase
+      .from("cocktail_makes")
+      .insert(make)
+      .select()
+      .single();
+    if (error) throw new Error(error.message);
+    return data as CocktailMake;
+  }
+  db().makes.unshift(make);
+  return make;
+}
+
+export async function getMakeStats(cocktailId: string): Promise<MakeStats> {
+  let rows: CocktailMake[];
+  const supabase = getServiceSupabase();
+  if (isSupabaseConfigured && supabase) {
+    const { data, error } = await supabase
+      .from("cocktail_makes")
+      .select("*")
+      .eq("cocktail_id", cocktailId)
+      .order("created_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    rows = (data as CocktailMake[]) ?? [];
+  } else {
+    rows = db()
+      .makes.filter((m) => m.cocktail_id === cocktailId)
+      .sort((a, b) => +new Date(b.created_at) - +new Date(a.created_at));
+  }
+
+  const ratings = rows.map((r) => r.rating).filter((r): r is number => !!r);
+  const rating_avg =
+    ratings.length > 0
+      ? Math.round((ratings.reduce((a, b) => a + b, 0) / ratings.length) * 10) / 10
+      : null;
+
+  return {
+    made_count: rows.length,
+    rating_avg,
+    rating_count: ratings.length,
+    photos: rows.filter((r) => r.photo_url),
+    reviews: rows.filter((r) => r.note),
+  };
 }
 
 // ── Image usage / quota ───────────────────────────────────────

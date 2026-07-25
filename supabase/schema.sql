@@ -102,6 +102,23 @@ create table if not exists public.comments (
 );
 create index if not exists comments_cocktail_idx on public.comments (cocktail_id);
 
+-- ─── cocktail_makes ──────────────────────────────────────────────────────────
+-- "I made this" — real-world validation. One row per time someone actually made
+-- a cocktail, with an optional star rating, real photo, and short review. This
+-- is the community/trust moat (real photos beat AI images for sharing).
+create table if not exists public.cocktail_makes (
+  id uuid primary key default gen_random_uuid(),
+  cocktail_id uuid not null references public.cocktails(id) on delete cascade,
+  user_id uuid not null references public.users(id) on delete cascade,
+  username text not null,
+  rating integer check (rating between 1 and 5),
+  photo_url text,
+  note text,
+  created_at timestamptz not null default now()
+);
+create index if not exists cocktail_makes_cocktail_idx
+  on public.cocktail_makes (cocktail_id, created_at desc);
+
 -- ─── image_generation_usage ─────────────────────────────────────────────────
 -- One row per generated image, used to enforce the monthly plan allowance.
 create table if not exists public.image_generation_usage (
@@ -138,6 +155,15 @@ alter table public.votes enable row level security;
 alter table public.comments enable row level security;
 alter table public.image_generation_usage enable row level security;
 alter table public.sponsored_brands enable row level security;
+alter table public.cocktail_makes enable row level security;
+
+-- Makes: anyone can read them (community proof); users insert their own.
+drop policy if exists "makes readable" on public.cocktail_makes;
+create policy "makes readable" on public.cocktail_makes
+  for select using (true);
+drop policy if exists "users add makes" on public.cocktail_makes;
+create policy "users add makes" on public.cocktail_makes
+  for insert with check (auth.uid() = user_id);
 
 -- Public read of approved, public cocktails.
 drop policy if exists "public cocktails readable" on public.cocktails;
