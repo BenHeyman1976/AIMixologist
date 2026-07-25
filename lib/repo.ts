@@ -10,6 +10,7 @@
 import { randomUUID } from "crypto";
 import { getServiceSupabase, isSupabaseConfigured } from "./supabase";
 import { db } from "./mockStore";
+import { dnaDistance, flavourProfileFor } from "./dna";
 import type {
   Cocktail,
   Comment,
@@ -213,6 +214,24 @@ export async function listPublicCocktails(
     );
   }
   return rows;
+}
+
+/**
+ * Finds public cocktails with the most similar flavour DNA to a given one.
+ * Powers "More like this" discovery — the pay-off of Cocktail DNA.
+ */
+export async function findSimilarCocktails(
+  cocktail: Cocktail,
+  limit = 3
+): Promise<Cocktail[]> {
+  const target = flavourProfileFor(cocktail);
+  const pool = await listPublicCocktails({ sort: "newest" });
+  return pool
+    .filter((c) => c.id !== cocktail.id)
+    .map((c) => ({ c, d: dnaDistance(target, flavourProfileFor(c)) }))
+    .sort((a, b) => a.d - b.d)
+    .slice(0, limit)
+    .map((x) => x.c);
 }
 
 function matchKeyword(c: Cocktail, kw: string): boolean {

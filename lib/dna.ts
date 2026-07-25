@@ -90,6 +90,16 @@ export function flavourProfileFor(
   return recipe.flavour_profile ?? estimateFlavourProfile(recipe);
 }
 
+/** Euclidean distance between two fingerprints (0 = identical). */
+export function dnaDistance(a: FlavourProfile, b: FlavourProfile): number {
+  let sum = 0;
+  for (const { key } of DNA_AXES) {
+    const d = (a[key] ?? 0) - (b[key] ?? 0);
+    sum += d * d;
+  }
+  return Math.sqrt(sum);
+}
+
 /** A short human tagline for the dominant notes, e.g. "Boozy · Bitter". */
 export function dnaHeadline(profile: FlavourProfile): string {
   const top = DNA_AXES.map((a) => ({ label: a.label, value: profile[a.key] }))

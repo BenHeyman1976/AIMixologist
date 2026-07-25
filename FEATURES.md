@@ -72,7 +72,7 @@ through. Update the status as features land.
 
 ### 4. Cocktail DNA
 | Flavour fingerprint + scales/chart | ✅ | 6-axis bar chart (sweet/sour/bitter/boozy/fruity/herbal); AI-scored w/ deterministic fallback |
-| DNA-based actions (find similar, same DNA other spirit) | ⬜ | next — powers discovery |
+| DNA-based actions (find similar, same DNA other spirit) | ✅ | "More like this" on every cocktail page, ranked by DNA distance |
 
 ### 5. Bartender Mode — **APP-ONLY** (not on web, by decision)
 | Full-screen bartender view | ✅ (iOS) | "Tell the Barman"; **web: not planned** |

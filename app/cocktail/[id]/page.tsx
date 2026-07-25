@@ -5,6 +5,7 @@ import VoteButton from "@/components/VoteButton";
 import ShareButtons from "@/components/ShareButtons";
 import CreatorPack from "@/components/CreatorPack";
 import RemixBar from "@/components/RemixBar";
+import CocktailCard from "@/components/CocktailCard";
 import Comments from "@/components/Comments";
 import { cocktailUrl } from "@/lib/site";
 import {
@@ -12,6 +13,7 @@ import {
   hasVoted,
   listComments,
   matchSponsoredBrand,
+  findSimilarCocktails,
 } from "@/lib/repo";
 import { getCurrentUser } from "@/lib/auth";
 import { complianceNotesFor } from "@/lib/compliance";
@@ -27,10 +29,11 @@ export default async function CocktailDetailPage({
   if (!cocktail) notFound();
 
   const user = getCurrentUser();
-  const [comments, voted, sponsor] = await Promise.all([
+  const [comments, voted, sponsor, similar] = await Promise.all([
     listComments(cocktail.id),
     hasVoted(cocktail.id, user.id),
     matchSponsoredBrand(cocktail),
+    findSimilarCocktails(cocktail, 3),
   ]);
 
   const compliance = complianceNotesFor(cocktail);
@@ -136,6 +139,22 @@ export default async function CocktailDetailPage({
           />
         </div>
       </article>
+
+      {similar.length > 0 && (
+        <section className="space-y-4">
+          <h2 className="font-display text-2xl font-bold text-cocktail-plum">
+            More like this 🧬
+          </h2>
+          <p className="-mt-2 text-sm text-cocktail-ink/60">
+            Matched by flavour DNA.
+          </p>
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {similar.map((c) => (
+              <CocktailCard key={c.id} cocktail={c} />
+            ))}
+          </div>
+        </section>
+      )}
 
       <Comments cocktailId={cocktail.id} initialComments={comments} />
     </div>
