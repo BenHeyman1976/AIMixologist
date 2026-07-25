@@ -6,7 +6,7 @@ import { getImageUsage, listUserCocktails } from "@/lib/repo";
 export const dynamic = "force-dynamic";
 
 export default async function ProfilePage() {
-  const user = getCurrentUser();
+  const user = await getCurrentUser();
   const [{ saved, published }, usage] = await Promise.all([
     listUserCocktails(user.id),
     getImageUsage(user.id),

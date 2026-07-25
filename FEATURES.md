@@ -132,7 +132,8 @@ Build order is driven by the Jobs To Be Done, not by more AI features.
 | **"I made this" + real photos + ratings + reviews** | ✅ | the trust moat — needs migration 002 + Storage bucket |
 | Save | 🟡 | |
 | Remix | ✅ | see §3 |
-| Follow creators | ⬜ | needs real auth + follows table |
+| Real accounts (Supabase Auth: magic link + Google) | ✅ | see AUTH_SETUP.md; safe fallback to demo when unconfigured |
+| Follow creators | ⬜ | now unblocked by real auth; needs follows table |
 | Report content | ⬜ | |
 | Creator profiles (public, followers, featured) | 🟡 | profile shows own cocktails only |
 | Discovery (trending/new/most-voted + "more like this" DNA) | ✅ | most-remixed/saved/seasonal ⬜ |

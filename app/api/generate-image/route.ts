@@ -10,7 +10,7 @@ import { consumeImageQuota, getCocktail, updateCocktail } from "@/lib/repo";
 // If a cocktailId is supplied, the new image is attached to that cocktail.
 export async function POST(req: NextRequest) {
   try {
-    const user = getCurrentUser();
+    const user = await getCurrentUser();
     const {
       name,
       prompt,

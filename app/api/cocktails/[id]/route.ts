@@ -10,7 +10,7 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   try {
-    const user = getCurrentUser();
+    const user = await getCurrentUser();
     const { isPublic, imageUrl } = await req.json();
 
     const patch: { is_public?: boolean; image_url?: string } = {};

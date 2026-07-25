@@ -55,9 +55,9 @@ export default function RootLayout({
   );
 }
 
-function SiteHeader() {
-  const loggedIn = isLoggedIn();
-  const user = getCurrentUser();
+async function SiteHeader() {
+  const user = await getCurrentUser();
+  const loggedIn = await isLoggedIn();
   return (
     <header className="sticky top-0 z-30 backdrop-blur bg-cocktail-cream/80 border-b border-cocktail-peach/30">
       <nav className="mx-auto max-w-6xl px-4 h-16 flex items-center justify-between">

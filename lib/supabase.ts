@@ -18,6 +18,11 @@ const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 export const isSupabaseConfigured = Boolean(url && serviceKey);
+// Real Supabase Auth needs the public URL + anon key (service key optional here).
+export const isSupabaseAuthConfigured = Boolean(url && anonKey);
+
+export const SUPABASE_URL = url;
+export const SUPABASE_ANON_KEY = anonKey;
 
 let browserClient: SupabaseClient | null = null;
 export function getBrowserSupabase(): SupabaseClient | null {

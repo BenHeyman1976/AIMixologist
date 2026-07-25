@@ -1,21 +1,23 @@
 // ─────────────────────────────────────────────────────────────
-// Placeholder auth.
+// Auth.
 //
-// For the MVP we use a lightweight cookie-based "session" so the login flow
-// (Google / Apple / Email buttons on /login) behaves like a real app, while
-// every downstream flow (save / publish / vote / comment) keeps working.
+// Two modes, chosen automatically:
+//  - Real Supabase Auth (magic link / Google OAuth) when NEXT_PUBLIC_SUPABASE_URL
+//    + anon key are set. The signed-in user is read from the Supabase session.
+//  - Mock cookie login (the original PoC behaviour) when Supabase isn't
+//    configured, so local demos still work with zero config.
 //
-// The logins are MOCKED — clicking a provider just sets the session cookie.
-// We deliberately keep the user id fixed to the demo user so saved cocktails
-// and seed data line up in the in-memory store.
-//
-// TODO(auth): replace with real Supabase Auth — wire up Google + Apple OAuth
-// providers and email magic links in the Supabase dashboard, then read the
-// authenticated session here instead of the mock cookie. The RLS policies in
-// supabase/schema.sql are already written against auth.uid().
+// getCurrentUser() always returns *some* user (the demo user for anonymous
+// visitors) so public browsing and server rendering never crash. Use
+// getSessionUser() when you need to know whether someone is genuinely signed in.
 // ─────────────────────────────────────────────────────────────
 
 import { cookies } from "next/headers";
+import { getSupabaseServer } from "./supabase-server";
+import {
+  getServiceSupabase,
+  isSupabaseAuthConfigured,
+} from "./supabase";
 
 export type AuthMethod = "google" | "apple" | "email";
 
@@ -40,7 +42,7 @@ interface SessionPayload {
 }
 
 /** Reads the (mock) session cookie, if present. */
-function readSession(): SessionPayload | null {
+function readMockSession(): SessionPayload | null {
   try {
     const raw = cookies().get(SESSION_COOKIE)?.value;
     if (!raw) return null;
@@ -52,24 +54,86 @@ function readSession(): SessionPayload | null {
   return null;
 }
 
-/** True when a user has "logged in" (mock session cookie present). */
-export function isLoggedIn(): boolean {
-  return readSession() !== null;
+function usernameFromEmail(email: string | undefined, uid: string): string {
+  const base = (email?.split("@")[0] ?? "")
+    .replace(/[^a-z0-9_]/gi, "")
+    .toLowerCase();
+  return base || `mixologist_${uid.slice(0, 6)}`;
 }
 
 /**
- * Returns the current user. Uses the username/method from the session cookie
- * when logged in, otherwise falls back to the demo user so server rendering
- * never crashes.
+ * Ensures a public.users row exists for an authenticated Supabase user and
+ * returns their profile. Uses the service client to bypass RLS.
  */
-export function getCurrentUser(): SessionUser {
-  const session = readSession();
-  if (session) {
+async function ensureUserRow(
+  uid: string,
+  email: string | undefined
+): Promise<SessionUser> {
+  const svc = getServiceSupabase();
+  if (!svc) {
+    return { id: uid, username: usernameFromEmail(email, uid), plan: "free" };
+  }
+
+  const { data: existing } = await svc
+    .from("users")
+    .select("id, username, plan")
+    .eq("id", uid)
+    .maybeSingle();
+  if (existing) {
     return {
-      ...DEMO_USER,
-      username: session.username,
-      method: session.method,
+      id: (existing as any).id,
+      username: (existing as any).username,
+      plan: (existing as any).plan ?? "free",
     };
   }
-  return DEMO_USER;
+
+  // Create the row, retrying once with a uid suffix if the username collides.
+  const base = usernameFromEmail(email, uid);
+  for (const username of [base, `${base}_${uid.slice(0, 4)}`]) {
+    const { error } = await svc
+      .from("users")
+      .insert({ id: uid, email: email ?? null, username, plan: "free" });
+    if (!error) return { id: uid, username, plan: "free" };
+  }
+  // Fall back to a definitely-unique username.
+  const unique = `${base}_${uid.slice(0, 8)}`;
+  await svc
+    .from("users")
+    .insert({ id: uid, email: email ?? null, username: unique, plan: "free" })
+    .select();
+  return { id: uid, username: unique, plan: "free" };
+}
+
+/** The genuinely-signed-in user, or null. Real auth first, then mock cookie. */
+export async function getSessionUser(): Promise<SessionUser | null> {
+  if (isSupabaseAuthConfigured) {
+    const supabase = getSupabaseServer();
+    if (supabase) {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (user) return ensureUserRow(user.id, user.email ?? undefined);
+    }
+    return null;
+  }
+
+  // Mock mode
+  const session = readMockSession();
+  if (session) {
+    return { ...DEMO_USER, username: session.username, method: session.method };
+  }
+  return null;
+}
+
+/** True when a user is genuinely signed in. */
+export async function isLoggedIn(): Promise<boolean> {
+  return (await getSessionUser()) !== null;
+}
+
+/**
+ * Returns the current user, falling back to the demo user for anonymous
+ * visitors so nothing crashes. Prefer getSessionUser() for gating writes.
+ */
+export async function getCurrentUser(): Promise<SessionUser> {
+  return (await getSessionUser()) ?? DEMO_USER;
 }

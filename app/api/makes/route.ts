@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const user = getCurrentUser();
+    const user = await getCurrentUser();
     const make = await addMake({
       cocktailId,
       userId: user.id,

@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
 // POST /api/comment  { cocktailId: string, body: string }
 export async function POST(req: NextRequest) {
   try {
-    const user = getCurrentUser();
+    const user = await getCurrentUser();
     const { cocktailId, body } = await req.json();
     if (!cocktailId || !body || !String(body).trim()) {
       return NextResponse.json(

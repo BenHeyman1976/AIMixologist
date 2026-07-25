@@ -8,7 +8,7 @@ import type { GeneratedRecipe } from "@/lib/types";
 //   { prompt: string, recipe: GeneratedRecipe, imageUrl?: string, isPublic?: boolean }
 export async function POST(req: NextRequest) {
   try {
-    const user = getCurrentUser();
+    const user = await getCurrentUser();
     const body = await req.json();
     const { prompt, recipe, imageUrl, isPublic } = body as {
       prompt: string;

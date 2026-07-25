@@ -30,7 +30,7 @@ export default async function CocktailDetailPage({
   const cocktail = await getCocktail(params.id);
   if (!cocktail) notFound();
 
-  const user = getCurrentUser();
+  const user = await getCurrentUser();
   const [comments, voted, sponsor, similar, makeStats] = await Promise.all([
     listComments(cocktail.id),
     hasVoted(cocktail.id, user.id),

@@ -7,7 +7,7 @@ import { toggleVote } from "@/lib/repo";
 // (enforced by a unique constraint in Supabase / a keyed map in mock mode).
 export async function POST(req: NextRequest) {
   try {
-    const user = getCurrentUser();
+    const user = await getCurrentUser();
     const { cocktailId } = await req.json();
     if (!cocktailId) {
       return NextResponse.json(
