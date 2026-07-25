@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import MicButton from "@/components/MicButton";
@@ -59,6 +60,14 @@ export default function HomePrompt() {
           </button>
         ))}
       </div>
+
+      <p className="mt-4 text-center text-sm text-white/90 sm:text-left">
+        Or{" "}
+        <Link href="/pantry" className="font-semibold underline">
+          tell us what you've already got in 🧊
+        </Link>{" "}
+        and we'll build something you can make right now.
+      </p>
     </div>
   );
 }

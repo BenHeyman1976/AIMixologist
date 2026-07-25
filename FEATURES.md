@@ -26,6 +26,22 @@ through. Update the status as features land.
 5. **Bartender Mode is APP-ONLY** — people don't carry laptops on a night out.
    Keep the iOS "Tell the Barman"; do **not** build it on web.
 
+## 🧭 Strategy north star (from Cocktail_App_Strategy_JTBD.md)
+
+**The moat is NOT AI.** AI just gets people started. The defensible product is the
+**workflow + community** around the recipe: *Discover it. Make it. Share the real thing.*
+Build order is driven by the Jobs To Be Done, not by more AI features.
+
+- **JTBD covered well:** #2 Discover (gallery, trending, Remix, DNA "more like this").
+- **JTBD now covered:** #3 Use what I own (`/pantry`).
+- **Biggest remaining gap = the moat:** #5 Show off *the real thing* — real-photo
+  upload, "I made it", ratings/reviews, community photos on a living cocktail page.
+  Needs real user accounts + a `cocktail_photos` (+ `ratings`) table + a Storage bucket.
+- **Reframe:** the Social Creator Pack (AI-image sharing) is inspiration; the primary
+  share should become the user's **real photo**. Evolve, don't scrap.
+- **Revenue (unchanged):** brand campaigns, affiliate shopping, advertising, event/wedding
+  packs, print, B2B white-label. **No subscriptions.**
+
 ## Decisions already locked (kept unless you say otherwise)
 - Measures **ml by default** (British), with an oz toggle. ✅ matches spec.
 - **No brands/bottles/packaging/text in AI images, ever** — brands only via their
@@ -99,6 +115,9 @@ through. Update the status as features land.
 | More retailers (Waitrose/MoM/Whisky Exchange) | ⬜ | |
 | Affiliate click tracking | ⬜ | |
 | Multi-cocktail / party basket | ⬜ | |
+
+### 8b. Use What I Own (pantry) — JTBD #3
+| "I've got gin, lemon, elderflower — what can I make?" | ✅ | `/pantry` chip input → cocktail built from your bar + "what to grab" shopping nudge |
 
 ### 9. Event Mode
 | Event inputs + menu/quantities/cost/shopping/plan | ⬜ | Night Planner (iOS) is adjacent, not this |

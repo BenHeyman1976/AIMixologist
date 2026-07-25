@@ -69,6 +69,12 @@ function SiteHeader() {
         </Link>
         {loggedIn ? (
           <div className="flex items-center gap-1 sm:gap-3 text-sm font-semibold text-cocktail-plum">
+            <Link
+              href="/pantry"
+              className="hidden px-3 py-2 rounded-full hover:bg-white/70 sm:inline"
+            >
+              What can I make?
+            </Link>
             <Link href="/gallery" className="px-3 py-2 rounded-full hover:bg-white/70">
               Gallery
             </Link>

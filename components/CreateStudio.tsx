@@ -6,6 +6,7 @@ import RecipeDetails from "@/components/RecipeDetails";
 import ShareButtons from "@/components/ShareButtons";
 import CreatorPack from "@/components/CreatorPack";
 import MicButton from "@/components/MicButton";
+import { displayMeasure } from "@/lib/units";
 import type { Cocktail, GeneratedRecipe, ImageUsage } from "@/lib/types";
 
 export interface RemixContext {
@@ -21,13 +22,16 @@ export interface RemixContext {
 export default function CreateStudio({
   initialPrompt = "",
   remix,
+  pantry,
 }: {
   initialPrompt?: string;
   remix?: RemixContext;
+  pantry?: { have: string[] };
 }) {
   const [prompt, setPrompt] = useState(initialPrompt);
   const [recipe, setRecipe] = useState<GeneratedRecipe | null>(null);
   const [compliance, setCompliance] = useState<string[]>([]);
+  const [pantryMatch, setPantryMatch] = useState<{ have: string[]; missing: string[] } | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [saved, setSaved] = useState<Cocktail | null>(null);
   const [usage, setUsage] = useState<ImageUsage | null>(null);
@@ -58,12 +62,39 @@ export default function CreateStudio({
     if (remix) {
       autoRan.current = true;
       remixRecipe();
+    } else if (pantry && pantry.have.length > 0) {
+      autoRan.current = true;
+      pantryRecipe();
     } else if (initialPrompt.trim().length >= 3) {
       autoRan.current = true;
       generateRecipe();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  async function pantryRecipe() {
+    if (!pantry) return;
+    setGenLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/pantry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ have: pantry.have }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setRecipe(data.recipe);
+      setCompliance(data.compliance ?? []);
+      setPantryMatch(data.match ?? null);
+      setSaved(null);
+      setImageUrl(null);
+    } catch (err: any) {
+      setError(err.message ?? "Failed to build a cocktail.");
+    } finally {
+      setGenLoading(false);
+    }
+  }
 
   async function remixRecipe() {
     if (!remix) return;
@@ -220,9 +251,17 @@ export default function CreateStudio({
     <div className="mx-auto max-w-3xl px-4 py-10 space-y-8">
       <div>
         <h1 className="font-display text-3xl font-bold text-cocktail-plum">
-          {remix ? "Remix a cocktail" : "Create a cocktail"}
+          {remix ? "Remix a cocktail" : pantry ? "From your bar" : "Create a cocktail"}
         </h1>
-        {remix ? (
+        {pantry ? (
+          <p className="mt-1 text-cocktail-ink/70">
+            Built from what you've got in:{" "}
+            <span className="font-semibold text-cocktail-plum">
+              {pantry.have.join(", ")}
+            </span>
+            .
+          </p>
+        ) : remix ? (
           <p className="mt-1 text-cocktail-ink/70">
             <span className="font-semibold text-cocktail-coral">{remix.twistLabel}</span>{" "}
             — based on{" "}
@@ -350,6 +389,38 @@ export default function CreateStudio({
                 </p>
               )}
             </div>
+
+            {/* Pantry match — what you already have vs what to grab. */}
+            {pantryMatch && (
+              <div className="rounded-2xl border border-cocktail-peach/40 bg-cocktail-cream/60 p-4 text-sm">
+                {pantryMatch.missing.length === 0 ? (
+                  <p className="font-semibold text-cocktail-plum">
+                    🎉 You've got everything you need — go make it!
+                  </p>
+                ) : (
+                  <>
+                    <p className="font-semibold text-cocktail-plum">
+                      You're almost there — grab {pantryMatch.missing.length}{" "}
+                      more:
+                    </p>
+                    <ul className="mt-2 space-y-1 text-cocktail-ink/85">
+                      {pantryMatch.missing.map((m, i) => (
+                        <li key={i} className="flex gap-2">
+                          <span className="text-cocktail-coral">＋</span>
+                          <span>{displayMeasure(m, units)}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                )}
+                {pantryMatch.have.length > 0 && (
+                  <p className="mt-2 text-cocktail-ink/55">
+                    Using from your bar: {pantryMatch.have.length} ingredient
+                    {pantryMatch.have.length === 1 ? "" : "s"} ✓
+                  </p>
+                )}
+              </div>
+            )}
 
             <RecipeDetails recipe={recipe} compliance={compliance} units={units} />
 

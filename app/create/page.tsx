@@ -9,8 +9,18 @@ export const dynamic = "force-dynamic";
 export default async function CreatePage({
   searchParams,
 }: {
-  searchParams: { prompt?: string; remixOf?: string; twist?: string; instruction?: string };
+  searchParams: {
+    prompt?: string;
+    remixOf?: string;
+    twist?: string;
+    instruction?: string;
+    have?: string;
+  };
 }) {
+  const pantry = searchParams.have
+    ? { have: searchParams.have.split(",").map((s) => s.trim()).filter(Boolean) }
+    : undefined;
+
   let remix = undefined;
   if (searchParams.remixOf) {
     const base = await getCocktail(searchParams.remixOf);
@@ -27,5 +37,11 @@ export default async function CreatePage({
     }
   }
 
-  return <CreateStudio initialPrompt={searchParams.prompt ?? ""} remix={remix} />;
+  return (
+    <CreateStudio
+      initialPrompt={searchParams.prompt ?? ""}
+      remix={remix}
+      pantry={pantry}
+    />
+  );
 }
