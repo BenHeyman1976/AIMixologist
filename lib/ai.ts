@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import type { GeneratedRecipe } from "./types";
 import { normaliseAlcoholLevel } from "./compliance";
+import { coerceFlavourProfile, estimateFlavourProfile } from "./dna";
 
 // ─────────────────────────────────────────────────────────────
 // AI layer.
@@ -76,7 +77,7 @@ juices, syrups, fruit). Do NOT list glassware, "a glass", ice, or the garnish as
 ingredients — glassware and garnish have their own fields.
 
 Respond with ONLY valid minified JSON matching exactly this shape:
-{"name":"","description":"","ingredients":[],"method":[],"garnish":"","glassware":"","tasting_notes":"","occasion":"","alcohol_level":"","abv":"","calories":"","prep_time":"","food_pairing":"","substitutions":[],"allergens":[],"tags":[]}
+{"name":"","description":"","ingredients":[],"method":[],"garnish":"","glassware":"","tasting_notes":"","occasion":"","alcohol_level":"","abv":"","calories":"","prep_time":"","food_pairing":"","substitutions":[],"allergens":[],"tags":[],"flavour_profile":{"sweet":0,"sour":0,"bitter":0,"boozy":0,"fruity":0,"herbal":0}}
 Where:
 - "alcohol_level" is one of: "alcohol-free", "low-alcohol", "full-strength".
 - "description" is a single enticing sentence.
@@ -86,6 +87,8 @@ Where:
 - "food_pairing" is a short suggestion.
 - "substitutions" are 1–3 easy swaps (e.g. "no gin? use vodka").
 - "allergens" lists notable allergens present (e.g. "egg", "dairy", "nuts") or [] if none.
+- "flavour_profile" scores each taste axis from 0 (absent) to 5 (dominant),
+  reflecting THIS drink honestly (an alcohol-free drink has boozy:0).
 Estimates are approximate and clearly not lab-measured.`;
 
 // ── Recipe generation ────────────────────────────────────────
@@ -223,7 +226,7 @@ function coerceRecipe(parsed: any, prompt: string): GeneratedRecipe {
   const arr = (v: any): string[] =>
     Array.isArray(v) ? v.map((x) => String(x)) : v ? [String(v)] : [];
   const str = (v: any): string | undefined => (v ? String(v) : undefined);
-  return {
+  const base = {
     name: String(parsed.name || "Untitled Cocktail"),
     ingredients: arr(parsed.ingredients),
     method: arr(parsed.method),
@@ -241,6 +244,11 @@ function coerceRecipe(parsed: any, prompt: string): GeneratedRecipe {
     substitutions: parsed.substitutions ? arr(parsed.substitutions) : undefined,
     allergens: parsed.allergens ? arr(parsed.allergens) : undefined,
   };
+  // Use the AI's flavour profile when provided; otherwise estimate one so the
+  // Cocktail DNA is always populated.
+  const flavour_profile =
+    coerceFlavourProfile(parsed.flavour_profile) ?? estimateFlavourProfile(base);
+  return { ...base, flavour_profile };
 }
 
 // ── Image generation ─────────────────────────────────────────

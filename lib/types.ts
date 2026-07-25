@@ -2,6 +2,16 @@
 
 export type AlcoholLevel = "alcohol-free" | "low-alcohol" | "full-strength";
 
+/** A cocktail's flavour fingerprint — each axis scored 0–5. */
+export interface FlavourProfile {
+  sweet: number;
+  sour: number;
+  bitter: number;
+  boozy: number;
+  fruity: number;
+  herbal: number;
+}
+
 export type ModerationStatus = "pending" | "approved" | "rejected";
 
 /** Enriched, optional recipe detail (added incrementally; safe if absent). */
@@ -18,6 +28,7 @@ export interface RecipeMeta {
   remixed_from_name?: string;
   remixed_from_username?: string;
   remix_twist?: string; // the twist applied, e.g. "Made it a mocktail"
+  flavour_profile?: FlavourProfile; // Cocktail DNA
 }
 
 /** The structured recipe shape returned by the AI recipe generator. */

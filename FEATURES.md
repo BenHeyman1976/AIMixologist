@@ -71,8 +71,8 @@ through. Update the status as features land.
 | Remix comparison (side-by-side diff) | ⬜ | next |
 
 ### 4. Cocktail DNA
-| Flavour fingerprint + scales/chart | ⬜ | |
-| DNA-based actions (find similar, same DNA other spirit) | ⬜ | |
+| Flavour fingerprint + scales/chart | ✅ | 6-axis bar chart (sweet/sour/bitter/boozy/fruity/herbal); AI-scored w/ deterministic fallback |
+| DNA-based actions (find similar, same DNA other spirit) | ⬜ | next — powers discovery |
 
 ### 5. Bartender Mode — **APP-ONLY** (not on web, by decision)
 | Full-screen bartender view | ✅ (iOS) | "Tell the Barman"; **web: not planned** |
@@ -153,9 +153,9 @@ and effort. We confirm/descope before each.
 
 **Next — the viral loop (biggest growth lever)**
 3. ✅ **Remix Engine**: one-tap remixes + attribution/lineage (§3.1–3.2).
-4. **Cocktail DNA**: flavour fingerprint + simple chart (§4) — powers remix & discovery. ← NEXT
+4. ✅ **Cocktail DNA**: flavour fingerprint + simple chart (§4).
 5. **Remix comparison** (§3.3).
-6. **Creator profiles + follow** (§11.4, §11.2).
+6. **Creator profiles + follow** (§11.4, §11.2). ← NEXT
 
 (Web Bartender Mode removed — app-only.)
 

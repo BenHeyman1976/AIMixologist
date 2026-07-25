@@ -1,5 +1,6 @@
 import type { GeneratedRecipe } from "@/lib/types";
 import ShopIngredients from "@/components/ShopIngredients";
+import FlavourDNA from "@/components/FlavourDNA";
 import { displayMeasure, type UnitSystem } from "@/lib/units";
 
 // Presentational recipe body — reused on the create page and detail page.
@@ -10,6 +11,7 @@ export default function RecipeDetails({
 }: {
   recipe: Pick<
     GeneratedRecipe,
+    | "name"
     | "ingredients"
     | "method"
     | "garnish"
@@ -17,6 +19,7 @@ export default function RecipeDetails({
     | "tasting_notes"
     | "occasion"
     | "tags"
+    | "alcohol_level"
     | "description"
     | "abv"
     | "calories"
@@ -24,6 +27,7 @@ export default function RecipeDetails({
     | "food_pairing"
     | "substitutions"
     | "allergens"
+    | "flavour_profile"
   >;
   compliance?: string[];
   units?: UnitSystem;
@@ -55,6 +59,8 @@ export default function RecipeDetails({
           ))}
         </div>
       )}
+      <FlavourDNA recipe={recipe} />
+
       <div className="grid gap-6 sm:grid-cols-2">
         <div>
           <h3 className="font-display text-lg font-bold text-cocktail-plum">

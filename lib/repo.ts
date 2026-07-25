@@ -34,6 +34,7 @@ const META_KEYS: (keyof RecipeMeta)[] = [
   "remixed_from_name",
   "remixed_from_username",
   "remix_twist",
+  "flavour_profile",
 ];
 
 function extractMeta(source: RecipeMeta): RecipeMeta {
