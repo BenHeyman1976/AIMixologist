@@ -4,6 +4,7 @@ import RecipeDetails from "@/components/RecipeDetails";
 import VoteButton from "@/components/VoteButton";
 import ShareButtons from "@/components/ShareButtons";
 import CreatorPack from "@/components/CreatorPack";
+import RemixBar from "@/components/RemixBar";
 import Comments from "@/components/Comments";
 import { cocktailUrl } from "@/lib/site";
 import {
@@ -67,6 +68,24 @@ export default async function CocktailDetailPage({
                 by @{cocktail.creator_username ?? "mixologist"} ·{" "}
                 {new Date(cocktail.created_at).toLocaleDateString()}
               </p>
+              {cocktail.remixed_from_name && (
+                <p className="mt-1 text-sm text-cocktail-ink/60">
+                  🔀 Remixed from{" "}
+                  {cocktail.remixed_from_id ? (
+                    <Link
+                      href={`/cocktail/${cocktail.remixed_from_id}`}
+                      className="underline"
+                    >
+                      {cocktail.remixed_from_name}
+                    </Link>
+                  ) : (
+                    cocktail.remixed_from_name
+                  )}
+                  {cocktail.remixed_from_username
+                    ? ` by @${cocktail.remixed_from_username}`
+                    : ""}
+                </p>
+              )}
             </div>
             <VoteButton
               cocktailId={cocktail.id}
@@ -76,6 +95,9 @@ export default async function CocktailDetailPage({
           </div>
 
           <RecipeDetails recipe={cocktail} compliance={compliance} />
+
+          {/* Remix — the viral loop. Turn this drink into the next one. */}
+          <RemixBar cocktailId={cocktail.id} />
 
           {/* Native sponsored placement — only shown for confirmed sponsors. */}
           {sponsor && (

@@ -8,11 +8,22 @@ import CreatorPack from "@/components/CreatorPack";
 import MicButton from "@/components/MicButton";
 import type { Cocktail, GeneratedRecipe, ImageUsage } from "@/lib/types";
 
+export interface RemixContext {
+  baseId: string;
+  baseName: string;
+  baseUsername: string | null;
+  presetKey: string | null;
+  instruction: string | null;
+  twistLabel: string;
+}
+
 // The creation studio: prompt → recipe → image → save → publish → share.
 export default function CreateStudio({
   initialPrompt = "",
+  remix,
 }: {
   initialPrompt?: string;
+  remix?: RemixContext;
 }) {
   const [prompt, setPrompt] = useState(initialPrompt);
   const [recipe, setRecipe] = useState<GeneratedRecipe | null>(null);
@@ -38,18 +49,48 @@ export default function CreateStudio({
     window.localStorage.setItem("siply_units", u);
   }
 
-  // When the user arrives from the home page with an idea already typed,
-  // generate the recipe straight away — no second click needed. The ref
-  // guard stops React's dev StrictMode from firing it twice.
+  // When the user arrives with an idea already typed (from the home hero) or a
+  // remix context (from a cocktail page), generate straight away — no second
+  // click. The ref guard stops React's dev StrictMode from firing it twice.
   const autoRan = useRef(false);
   useEffect(() => {
     if (autoRan.current) return;
-    if (initialPrompt.trim().length >= 3) {
+    if (remix) {
+      autoRan.current = true;
+      remixRecipe();
+    } else if (initialPrompt.trim().length >= 3) {
       autoRan.current = true;
       generateRecipe();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  async function remixRecipe() {
+    if (!remix) return;
+    setGenLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/remix", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          baseId: remix.baseId,
+          preset: remix.presetKey ?? undefined,
+          instruction: remix.instruction ?? undefined,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setRecipe(data.recipe);
+      setCompliance(data.compliance ?? []);
+      setSaved(null);
+      setImageUrl(null);
+    } catch (err: any) {
+      setError(err.message ?? "Failed to remix cocktail.");
+    } finally {
+      setGenLoading(false);
+    }
+  }
 
   // Bring the recipe into view the moment it appears, so it's obvious the
   // generation worked (no "did anything happen?" scroll hunting).
@@ -179,12 +220,23 @@ export default function CreateStudio({
     <div className="mx-auto max-w-3xl px-4 py-10 space-y-8">
       <div>
         <h1 className="font-display text-3xl font-bold text-cocktail-plum">
-          Create a cocktail
+          {remix ? "Remix a cocktail" : "Create a cocktail"}
         </h1>
-        <p className="mt-1 text-cocktail-ink/70">
-          Describe your idea. Iterate as many times as you like — recipes are
-          unlimited and free.
-        </p>
+        {remix ? (
+          <p className="mt-1 text-cocktail-ink/70">
+            <span className="font-semibold text-cocktail-coral">{remix.twistLabel}</span>{" "}
+            — based on{" "}
+            <Link href={`/cocktail/${remix.baseId}`} className="underline">
+              {remix.baseName}
+            </Link>
+            {remix.baseUsername ? ` by @${remix.baseUsername}` : ""}.
+          </p>
+        ) : (
+          <p className="mt-1 text-cocktail-ink/70">
+            Describe your idea. Iterate as many times as you like — recipes are
+            unlimited and free.
+          </p>
+        )}
         {/* Measurement preference */}
         <div className="mt-4 flex items-center gap-2">
           <span className="text-sm font-semibold text-cocktail-ink/60">
@@ -208,8 +260,9 @@ export default function CreateStudio({
         </div>
       </div>
 
-      {/* Initial prompt — shown only until the first recipe exists. */}
-      {!recipe && (
+      {/* Initial prompt — shown only until the first recipe exists (and not
+          while a remix is auto-generating). */}
+      {!recipe && !genLoading && (
         <div className="card p-5 space-y-3">
           <textarea
             className="input min-h-[110px] text-lg"
@@ -247,7 +300,9 @@ export default function CreateStudio({
           <p className="font-display text-xl font-bold text-cocktail-plum">
             Siply is shaking things up…
           </p>
-          <p className="text-sm text-cocktail-ink/60">Crafting your recipe</p>
+          <p className="text-sm text-cocktail-ink/60">
+            {remix ? `${remix.twistLabel}…` : "Crafting your recipe"}
+          </p>
         </div>
       )}
 
@@ -274,9 +329,27 @@ export default function CreateStudio({
           </div>
 
           <div className="p-6 space-y-6">
-            <h2 className="font-display text-2xl font-bold text-cocktail-plum">
-              {recipe.name}
-            </h2>
+            <div>
+              <h2 className="font-display text-2xl font-bold text-cocktail-plum">
+                {recipe.name}
+              </h2>
+              {recipe.remixed_from_name && (
+                <p className="mt-1 text-sm text-cocktail-ink/60">
+                  🔀 Remixed from{" "}
+                  {recipe.remixed_from_id ? (
+                    <Link
+                      href={`/cocktail/${recipe.remixed_from_id}`}
+                      className="underline"
+                    >
+                      {recipe.remixed_from_name}
+                    </Link>
+                  ) : (
+                    recipe.remixed_from_name
+                  )}
+                  {recipe.remixed_from_username ? ` by @${recipe.remixed_from_username}` : ""}
+                </p>
+              )}
+            </div>
 
             <RecipeDetails recipe={recipe} compliance={compliance} units={units} />
 

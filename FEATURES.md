@@ -66,9 +66,9 @@ through. Update the status as features land.
 ### 3. Remix Engine  🔑 (viral loop)
 | Feature | Status | Notes |
 |---|---|---|
-| One-tap taste/format/theme/ingredient remixes | ⬜ | we have "tweak & regenerate" (freeform) only |
-| Remix attribution + lineage ("Remixed from X by Y") | ⬜ | |
-| Remix comparison (side-by-side diff) | ⬜ | |
+| One-tap taste/format/theme/ingredient remixes | ✅ | 6 presets (stronger/mocktail/tropical/fancy/lighter/surprise) + free-text twist |
+| Remix attribution + lineage ("Remixed from X by Y") | ✅ | stored in meta, shown on create result + cocktail page, links to parent |
+| Remix comparison (side-by-side diff) | ⬜ | next |
 
 ### 4. Cocktail DNA
 | Flavour fingerprint + scales/chart | ⬜ | |
@@ -152,8 +152,8 @@ and effort. We confirm/descope before each.
 2. ✅ AI transparency + safety notes (raw egg, flame, high-ABV, allergens).
 
 **Next — the viral loop (biggest growth lever)**
-3. **Remix Engine**: one-tap remixes + attribution/lineage (§3.1–3.2). ← NEXT
-4. **Cocktail DNA**: flavour fingerprint + simple chart (§4) — powers remix & discovery.
+3. ✅ **Remix Engine**: one-tap remixes + attribution/lineage (§3.1–3.2).
+4. **Cocktail DNA**: flavour fingerprint + simple chart (§4) — powers remix & discovery. ← NEXT
 5. **Remix comparison** (§3.3).
 6. **Creator profiles + follow** (§11.4, §11.2).
 

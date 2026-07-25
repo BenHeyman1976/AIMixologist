@@ -30,6 +30,10 @@ const META_KEYS: (keyof RecipeMeta)[] = [
   "food_pairing",
   "substitutions",
   "allergens",
+  "remixed_from_id",
+  "remixed_from_name",
+  "remixed_from_username",
+  "remix_twist",
 ];
 
 function extractMeta(source: RecipeMeta): RecipeMeta {

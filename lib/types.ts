@@ -13,6 +13,11 @@ export interface RecipeMeta {
   food_pairing?: string;
   substitutions?: string[];
   allergens?: string[];
+  // Remix lineage — set when this cocktail was created by remixing another.
+  remixed_from_id?: string;
+  remixed_from_name?: string;
+  remixed_from_username?: string;
+  remix_twist?: string; // the twist applied, e.g. "Made it a mocktail"
 }
 
 /** The structured recipe shape returned by the AI recipe generator. */
