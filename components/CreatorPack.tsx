@@ -11,6 +11,7 @@ import type { GeneratedRecipe } from "@/lib/types";
 export default function CreatorPack({
   recipe,
   imageUrl,
+  realPhotos = [],
   link,
 }: {
   recipe: Pick<
@@ -25,15 +26,31 @@ export default function CreatorPack({
     | "garnish"
   >;
   imageUrl?: string | null;
+  realPhotos?: string[];
   link?: string;
 }) {
   const [platform, setPlatform] = useState<Platform>("instagram");
   const [copied, setCopied] = useState<string | null>(null);
   const [downloading, setDownloading] = useState(false);
 
+  // Image options to share: real photos first (the thing people actually want
+  // to post), AI concept image last as a fallback. Default to a real photo.
+  const options = useMemo(() => {
+    const opts: { url: string; label: string; real: boolean }[] = [];
+    realPhotos.filter(Boolean).forEach((url, i) =>
+      opts.push({ url, label: realPhotos.length > 1 ? `Real photo ${i + 1}` : "Real photo", real: true })
+    );
+    if (imageUrl) opts.push({ url: imageUrl, label: "AI concept", real: false });
+    return opts;
+  }, [realPhotos, imageUrl]);
+
+  const [selected, setSelected] = useState(0);
+  const active = options[selected] ?? options[0];
+  const shareImage = active?.url ?? null;
+
   const copy = useMemo(
-    () => buildCreatorCopy(recipe, platform, link),
-    [recipe, platform, link]
+    () => buildCreatorCopy(recipe, platform, link, active?.real ?? false),
+    [recipe, platform, link, active?.real]
   );
 
   async function copyText(key: string, text: string) {
@@ -47,19 +64,19 @@ export default function CreatorPack({
   }
 
   async function downloadImage() {
-    if (!imageUrl) return;
+    if (!shareImage) return;
     setDownloading(true);
-    const filename = `${slug(recipe.name)}-siply.png`;
+    const filename = `${slug(recipe.name)}-siply.jpg`;
     try {
       // Fetch → blob so it saves rather than navigating away.
-      const res = await fetch(imageUrl, { mode: "cors" });
+      const res = await fetch(shareImage, { mode: "cors" });
       const blob = await res.blob();
       const objectUrl = URL.createObjectURL(blob);
       triggerDownload(objectUrl, filename);
       URL.revokeObjectURL(objectUrl);
     } catch {
       // Cross-origin fetch blocked — fall back to a direct link/new tab.
-      triggerDownload(imageUrl, filename, true);
+      triggerDownload(shareImage, filename, true);
     } finally {
       setDownloading(false);
     }
@@ -117,9 +134,35 @@ export default function CreatorPack({
         ))}
       </div>
 
+      {/* Image picker — real photos first, AI concept as fallback. */}
+      {options.length > 1 && (
+        <div className="space-y-2">
+          <span className="text-xs font-semibold uppercase tracking-wide text-cocktail-plum/60">
+            Choose your image — real photos post best 📸
+          </span>
+          <div className="flex flex-wrap gap-2">
+            {options.map((opt, i) => (
+              <button
+                key={opt.url + i}
+                onClick={() => setSelected(i)}
+                className={`relative h-20 w-20 overflow-hidden rounded-xl border-2 transition ${
+                  selected === i ? "border-cocktail-coral" : "border-transparent opacity-70 hover:opacity-100"
+                }`}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={opt.url} alt={opt.label} className="h-full w-full object-cover" />
+                <span className="absolute bottom-0 inset-x-0 bg-black/55 py-0.5 text-center text-[9px] text-white">
+                  {opt.real ? "📸 Real" : "AI"}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Image download + native share */}
       <div className="flex flex-wrap gap-2">
-        {imageUrl ? (
+        {shareImage ? (
           <button
             onClick={downloadImage}
             disabled={downloading}
@@ -129,7 +172,7 @@ export default function CreatorPack({
           </button>
         ) : (
           <span className="text-sm text-cocktail-ink/50">
-            Generate an image first to include a photo.
+            Add your photo (tap "I made this") or generate an image to include one.
           </span>
         )}
         <button

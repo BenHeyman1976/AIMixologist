@@ -137,7 +137,8 @@ export function buildCreatorCopy(
     "name" | "description" | "tasting_notes" | "occasion" | "tags" | "alcohol_level" | "ingredients" | "garnish"
   >,
   platform: Platform = "instagram",
-  link?: string
+  link?: string,
+  isRealPhoto = false
 ): CreatorCopy {
   const hashtags = buildHashtags(recipe, platform);
   const hashtagLine = hashtags.map((t) => `#${t}`).join(" ");
@@ -145,7 +146,9 @@ export function buildCreatorCopy(
   const lines: string[] = [];
   lines.push(`🍸 ${recipe.name}`);
   lines.push("");
-  lines.push(hook(recipe));
+  // When sharing a real photo, lead with the proud "I made this" energy.
+  if (isRealPhoto) lines.push(`Made this myself 🙌 ${hook(recipe)}`);
+  else lines.push(hook(recipe));
 
   // TikTok/short-form captions stay punchy; IG/Pinterest can carry the recipe.
   if (platform !== "tiktok" && recipe.ingredients?.length) {

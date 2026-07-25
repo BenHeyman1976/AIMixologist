@@ -137,10 +137,13 @@ export default async function CocktailDetailPage({
             text={cocktail.tasting_notes}
           />
 
-          {/* Social Creator Pack — clean image download + auto caption/hashtags. */}
+          {/* Social Creator Pack — real photos first, AI concept as fallback. */}
           <CreatorPack
             recipe={cocktail}
             imageUrl={cocktail.image_url}
+            realPhotos={makeStats.photos
+              .map((p) => p.photo_url)
+              .filter((u): u is string => !!u)}
             link={cocktailUrl(cocktail.id)}
           />
         </div>
